@@ -1,0 +1,8 @@
+prefix=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel
+
+Name: imu_vision_interaction
+Description: Description of imu_vision_interaction
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
