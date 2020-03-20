@@ -15,6 +15,9 @@ import signal
 import subprocess
 import rospy
 from std_msgs.msg import String
+import socket
+import io
+import shlex
 
 # Argument parsing
 parser = argparse.ArgumentParser(
@@ -181,7 +184,12 @@ class shimmer():
 
     def bt_connection(self, num):
         target_address = None
-        nearby_devices = bluetooth.discover_devices()
+
+        try:
+            nearby_devices = bluetooth.discover_devices()
+        except bluetooth.btcommon.BluetoothError as e:
+            print(f"Discover Devices error: {e}")
+
         for bdaddr in nearby_devices:
             if self._ID == bdaddr[-8:]:
                 target_address = bdaddr
@@ -193,9 +201,21 @@ class shimmer():
             # Start a new "bluetooth-agent" process where XXXX is the passkey
             #status = subprocess.call("bluetooth-agent " + passkey + " &", shell=True)
 
-            self._connected = True
-            subprocess.run(f"sudo rfcomm connect {self._port} {target_address} 1", shell=True)
-            #self._connected = False
+            try:
+                #self._connected = True
+                subprocess.run(f"sudo rfcomm connect {self._port} {target_address} 1", shell=True)
+                print(f"Quitting from {self._location} connection thread")
+                global quit
+                quit = True
+
+            except Exception as e:
+                print(f"Caught exception in connecting {self._location}: {e}")
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
+                self._connected = False
+
+            print("Past connection point")
 
         else:
             print(f"could not find {self._location} bluetooth device nearby")
@@ -372,6 +392,7 @@ def IMUsensorsMain():
 
 
 if __name__ == "__main__":
+    #subprocess.call("sudo rfcomm release all", shell=True)
     # kill any rfcomm connections currently active
     subprocess.call("sudo killall rfcomm", shell=True)
     # kill any "bluetooth-agent" process that is already running
