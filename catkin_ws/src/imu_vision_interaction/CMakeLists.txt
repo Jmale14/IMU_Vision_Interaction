@@ -3,12 +3,14 @@ project(imu_vision_interaction)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
-
+set(OpenCV_DIR /usr/share/OpenCV/)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
+  std_msgs
   rospy
   std_msgs
 )

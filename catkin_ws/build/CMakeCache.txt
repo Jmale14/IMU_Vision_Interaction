@@ -236,12 +236,6 @@ GTEST_MAIN_LIBRARY:FILEPATH=GTEST_MAIN_LIBRARY-NOTFOUND
 //Path to a library.
 GTEST_MAIN_LIBRARY_DEBUG:FILEPATH=GTEST_MAIN_LIBRARY_DEBUG-NOTFOUND
 
-//Value Computed by CMake
-IMU_Prediction_BINARY_DIR:STATIC=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/imu_vision_interaction
-
-//Value Computed by CMake
-IMU_Prediction_SOURCE_DIR:STATIC=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction
-
 //lsb_release executable was found
 LSB_FOUND:BOOL=TRUE
 
@@ -251,8 +245,17 @@ LSB_RELEASE_EXECUTABLE:FILEPATH=/usr/bin/lsb_release
 //Path to a program.
 NOSETESTS:FILEPATH=/usr/bin/nosetests
 
+//The directory containing a CMake configuration file for OpenCV.
+OpenCV_DIR:PATH=OpenCV_DIR-NOTFOUND
+
 //Path to a program.
 PYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3
+
+//No help, variable specified on the command line.
+PYTHON_INCLUDE_DIR:UNINITIALIZED=/usr/include/python3.5m
+
+//No help, variable specified on the command line.
+PYTHON_LIBRARY:UNINITIALIZED=/usr/lib/x86_64-linux-gnu/libpython3.5m.so
 
 //Specify specific Python version to use ('major.minor' or 'major')
 PYTHON_VERSION:STRING=2
@@ -295,6 +298,12 @@ catkin_DIR:PATH=/opt/ros/melodic/share/catkin/cmake
 
 //The directory containing a CMake configuration file for cpp_common.
 cpp_common_DIR:PATH=/opt/ros/melodic/share/cpp_common/cmake
+
+//The directory containing a CMake configuration file for cv_bridge.
+cv_bridge_DIR:PATH=/opt/ros/melodic/share/cv_bridge/cmake
+
+//The directory containing a CMake configuration file for geometry_msgs.
+geometry_msgs_DIR:PATH=/opt/ros/melodic/share/geometry_msgs/cmake
 
 //Value Computed by CMake
 gmock_BINARY_DIR:STATIC=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/gtest/googlemock
@@ -377,6 +386,9 @@ rospy_DIR:PATH=/opt/ros/melodic/share/rospy/cmake
 
 //The directory containing a CMake configuration file for rostime.
 rostime_DIR:PATH=/opt/ros/melodic/share/rostime/cmake
+
+//The directory containing a CMake configuration file for sensor_msgs.
+sensor_msgs_DIR:PATH=/opt/ros/melodic/share/sensor_msgs/cmake
 
 //The directory containing a CMake configuration file for std_msgs.
 std_msgs_DIR:PATH=/opt/ros/melodic/share/std_msgs/cmake
@@ -535,6 +547,8 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Details about finding OpenCV
+FIND_PACKAGE_MESSAGE_DETAILS_OpenCV:INTERNAL=[/usr][v3.2.0()]
 //Details about finding PythonInterp
 FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/usr/bin/python3][v3.6.9()]
 //Details about finding Threads
