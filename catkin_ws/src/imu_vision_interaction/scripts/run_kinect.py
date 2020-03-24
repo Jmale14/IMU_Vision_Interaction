@@ -16,19 +16,18 @@ import sys
 import time
 import cv2
 import rospy
-from std_msgs.msg import String, Float64MultiArray
-from rospy.numpy_msg import numpy_msg
+from std_msgs.msg import String, Bool
+from imu_vision_interaction.msg import kinect_msg
 from image_screw_detector import ImScrewDetector
-from std_msgs.msg import MultiArrayDimension
-#from cv_bridge.boost.cv_bridge_boost import getCvType
 
 
 def kinect_run():
     # Camera
     camera = None
-    pub = rospy.Publisher('Image_Screws', Float64MultiArray, queue_size=1)
+    pub = rospy.Publisher('Image_Screws', kinect_msg, queue_size=1)
     rospy.init_node('Kinect_Main', anonymous=True)
     rate = rospy.Rate(10)
+    msg = kinect_msg()
     try:
         im_screw_detect = ImScrewDetector()
     except Exception:
@@ -39,10 +38,6 @@ def kinect_run():
     while not rospy.is_shutdown():
         try:
             image = np.array(frame_convert2.video_cv(freenect.sync_get_video()[0]))
-            if args.disp:
-                cv2.imshow('Image', image)
-                if cv2.waitKey(10) == 27:
-                    break
         except TypeError as e:
             time.sleep(1)
         except Exception as e:
@@ -51,12 +46,17 @@ def kinect_run():
             break
 
 
-        im_screw_states = im_screw_detect.detect_screws(image)
+        im_screw_states = im_screw_detect.detect_screws(image, args.disp).tolist()
 
         # safe_move = camera.safetomove(image)  # Needs work
-        #im_screw_states = Float64MultiArray(data=im_screw_states)
-        pub_states.data = im_screw_states.tolist()
-        pub.publish(pub_states)
+
+        msg.im_screw_probs_1 = im_screw_states[0]
+        msg.im_screw_probs_2 = im_screw_states[1]
+        msg.im_screw_probs_3 = im_screw_states[2]
+        msg.im_screw_probs_4 = im_screw_states[3]
+
+        msg.safe_move = False
+        pub.publish(msg)
         rate.sleep()
 
 

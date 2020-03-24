@@ -90,7 +90,7 @@ class ImScrewDetector:
         closestptsidx = indices2[pointidx]
         return closestptsidx
 
-    def detect_screws(self, frame):
+    def detect_screws(self, frame, disp):
         grayIN = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # apply GuassianBlur to reduce noise. medianBlur is also added for smoothening, reducing noise.
@@ -158,11 +158,12 @@ class ImScrewDetector:
                         #screw_probs[p] = prob
                         fourkeypoints[p] = keypoints[idx]
 
-                        txt = f"{self._CATEGORIES[guess]}"
-                        frame = cv2.drawKeypoints(frame, fourkeypoints, np.array([]), (0, 0, 255),
-                                                  cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-                        frame = cv2.putText(frame, txt, (int(keypoints[idx].pt[0]), int(keypoints[idx].pt[1])),
-                                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+                        if disp:
+                            txt = f"{self._CATEGORIES[guess]}"
+                            frame = cv2.drawKeypoints(frame, fourkeypoints, np.array([]), (0, 0, 255),
+                                                      cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+                            frame = cv2.putText(frame, txt, (int(keypoints[idx].pt[0]), int(keypoints[idx].pt[1])),
+                                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
                 i = i + 1
 
@@ -202,17 +203,19 @@ class ImScrewDetector:
         #     i = i + 1
 
         # Display the resulting frame
-        cv2.imshow("Circles", frame)
-        im_screw_probs = np.empty((4, 5))
+        if disp:
+            cv2.imshow("Circles", frame)
+            if cv2.waitKey(10) == 27:
+                pass
 
-
-
-        i = 0;
+        im_screw_probs = np.zeros((4, 5))
+        i = 0
         for point in fourkeypoints:
             if point is not None:
                 pointint = listpoints.index(point)
-                im_screw_probs[i] = guesses[pointint]
+                im_screw_probs[i, :] = guesses[pointint]
             i = i+1
+
 
         if time.time() - self._lasttime > 1:
             print(tally)
