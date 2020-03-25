@@ -11,11 +11,12 @@ def imu_callback(data):
 
 
 def imscrews_callback(data):
-    rospy.loginfo(f"{rospy.get_caller_id()} - Safe Move: {data.safe_move} \n"
-                  f"Image Screw Predictions: {data.im_screw_probs_1}\n"
-                  f"                         {data.im_screw_probs_2} \n"
-                  f"                         {data.im_screw_probs_3} \n"
-                  f"                         {data.im_screw_probs_4} \n")
+    rospy.loginfo(f"{rospy.get_caller_id()}:"
+                  f"    Safe Move: {data.safe_move} \n"
+                  f"    Image Screw Predictions: {data.im_screw_probs_1}\n"
+                  f"                             {data.im_screw_probs_2} \n"
+                  f"                             {data.im_screw_probs_3} \n"
+                  f"                             {data.im_screw_probs_4} \n")
 
 
 def IMU_listener():
