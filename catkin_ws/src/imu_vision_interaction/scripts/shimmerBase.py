@@ -81,6 +81,7 @@ def plot_func(plotdata):
 class shimmer():
     def __init__(self, q):
         self._ready = False
+        self._connect_error = True
         self._connection = None
         self._connected = False
         self._ID = SHIM_IDs[q]
@@ -101,17 +102,16 @@ class shimmer():
         return
 
     def initiate(self, num):
-        while (not self._connected) & (not quit):
+        while (not self._connected) & (not self._connect_error) & (not quit):
             time.sleep(1)
             try:
                 self._serial = serial.Serial(self._port, 115200)
-                self._connected = True
-
                 self._serial.flushInput()
                 print("  port opening, done.")
                 # send the set sensors command
                 self._serial.write(struct.pack('BBBB', 0x08, 0xC0, 0x20, 0x00))  # analogaccel, mpu gyro, batt volt
                 self.wait_for_ack()
+                self._connected = True
                 print("  sensor setting, done.")
                 # send the set sampling rate command
                 self._serial.write(
@@ -189,43 +189,46 @@ class shimmer():
         return calib_data
 
     def bt_connection(self, num):
-        target_address = None
-
-        try:
-            nearby_devices = bluetooth.discover_devices()
-        except bluetooth.btcommon.BluetoothError as e:
-            print(f"Discover Devices error: {e}")
-
-        for bdaddr in nearby_devices:
-            if self._ID == bdaddr[-8:]:
-                target_address = bdaddr
-                break
-
-        if target_address is not None:
-            print(f"found {self._location} bluetooth device with address {target_address}")
-
-            # Start a new "bluetooth-agent" process where XXXX is the passkey
-            subprocess.call(f"bluetooth-agent {passkey}", shell=True)
-
+        count = 1
+        while self._connect_error & (not quit) & (count <= 3):
+            print(f"Trying to connect {self._location}, attempt {count}/3")
+            target_address = None
             try:
-                #self._connected = True
-                self._connection = subprocess.Popen(f"sudo rfcomm connect {self._port} {target_address} 1", shell=True)
-                #print(f"Quitting from {self._location} connection thread")
-                #global quit
-                #quit = True
+                print(f"Finding Devices for {self._location}...")
+                nearby_devices = bluetooth.discover_devices()
+            except bluetooth.btcommon.BluetoothError as e:
+                print(f"Discover Devices error: {e}")
 
-            except Exception as e:
-                print(f"Caught exception in connecting {self._location}: {e}")
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
+            for bdaddr in nearby_devices:
+                if self._ID == bdaddr[-8:]:
+                    target_address = bdaddr
+                    break
+
+            if target_address is not None:
+                print(f"found {self._location} bluetooth device with address {target_address}")
+
+                # Start a new "bluetooth-agent" process where XXXX is the passkey
+                #subprocess.call(f"bluetooth-agent {passkey}", shell=True)
+
+                try:
+                    self._connection = subprocess.Popen(f"sudo rfcomm connect {self._port} {target_address} 1", shell=True)
+                    self._connect_error = False
+                    return True
+
+                except Exception as e:
+                    self._connect_error = True
+                    self._connected = False
+                    print(f"Caught exception in connecting {self._location}: {e}")
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                    print(exc_type, fname, exc_tb.tb_lineno)
+
+            else:
+                print(f"could not find {self._location} bluetooth device nearby, is it turned on?")
+                self._connect_error = True
                 self._connected = False
 
-            print("Past connection point")
-
-        else:
-            print(f"could not find {self._location} bluetooth device nearby")
-            self._connected = False
+        return False
 
     def checkbattery(self):
         batt_last = self._batt_perc
@@ -261,89 +264,91 @@ class shimmer():
         if (self._batt_perc != batt_last) & (self._batt_perc is not None):
             print(f"{self._location} sensor battery at {self._batt_perc}%")
 
+    def start(self, num):
+        # Start thread for shimmer connection
+        # connect_threads[num] = threading.Thread(target=shimmers[num].bt_connection, args=(num,))
+        # connect_threads[num].start()
+        if self.bt_connection(num):
+            if self.initiate(num):  # Send set up commands, etc to shimmer
+                print(f'---Initiated {self._location} Sensor---')
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def getdata(self, num, batt_time, ddata, numbytes):
+        framesize = 18  # 1byte packet type + 3byte timestamp + 3x2byte Analog Accel + 2byte Battery + 3x2byte Gyro
+        while numbytes < framesize and (not quit):
+            if time.time() - shim_timeout > 0.5:
+                print(f"-----Timeout on sensor {num + 1} - {self._location}-----")
+            try:
+                ddata = ddata + self._serial.read(framesize)
+            except Exception:
+                if time.time() - shim_timeout > 0.5:
+                    print(f"Unable to read sensor {num + 1} - {self._location}, trying again ")
+            numbytes = len(ddata)
+            shim_timeout = time.time()
+
+        data = ddata[0:framesize]
+        ddata = ddata[framesize:]
+        numbytes = len(ddata)
+
+        accel = self.calibrate_data(np.array(struct.unpack('HHH', data[4:10]), ndmin=2), 'a')
+        self._accel = np.vstack((self._accel, accel))
+        self._accel = self._accel[-WIN_LEN:, :]
+        self._accel = np.nan_to_num(self._accel)
+
+        batt_arr = np.empty((1, 0))
+        batt_now = struct.unpack('H', data[10:12])[0] * 6 / 4095
+        batt_now = np.nan_to_num(batt_now)
+        batt_arr = np.append(batt_arr, batt_now)
+        self._batt = np.mean(batt_arr)
+        if len(batt_arr) == 10:
+            batt_arr = np.delete(batt_arr, 0)
+
+        if (time.time() - batt_time) > 1:
+            self.checkbattery()
+            batt_time = time.time()
+
+        gyro = self.calibrate_data(np.array(struct.unpack('>hhh', data[12:framesize]), ndmin=2), 'g')
+        self._gyro = np.vstack((self._gyro, gyro))
+        self._gyro = self._gyro[-WIN_LEN:, :]
+        self._gyro = np.nan_to_num(self._gyro)
+        return batt_time, ddata, numbytes
+
 
 def shimmer_thread(num):
     print(f"Setting up Sensor {num + 1}/{numsensors}")
     shimmers[num] = shimmer(num)  # Create instance of shimmer class for each device
-    # Start thread for shimmer connection
-    #connect_threads[num] = threading.Thread(target=shimmers[num].bt_connection, args=(num,))
-    #connect_threads[num].start()
-    shimmers[num].bt_connection(num)
-    shimmers[num].initiate(num)  # Send set up commands, etc to shimmer
-    print(f'---Initiated {shimmers[num]._location} Sensor---')
+
     # read incoming data
+    first_try = True
+    batt_time = time.time()
     ddata = b''
     numbytes = 0
-    framesize = 18  # 1byte packet type + 3byte timestamp + 3x2byte Analog Accel + 2byte Battery + 3x2byte Gyro
-    timer = time.time()
-    while not shimmers[num]._connected and not quit:
-        if time.time() - timer > 2:
-            print(f"Waiting on initial connection for {num + 1} - {shimmers[num]._location}")
-            timer = time.time()
-
-            if (shimmers[num]._connection.poll() is not None) and (not quit):
-                shimmers[num]._connected = False
-                # Try restarting connection thread
-                print(f"Lost connection, restarting connection {num + 1} - {POSITIONS[num]}")
-                #connect_threads[num] = threading.Thread(target=shimmers[num].bt_connection, args=(num,))
-                #connect_threads[num].start()
-                shimmers[num]._connection.kill()
-                shimmers[num].bt_connection(num)
-
-    print(f"{shimmers[num]._location} sensor connected, starting data stream {num + 1}...")
-    shimmers[num]._ready = True
-    batt_time = time.time()
     while not quit:
-        if (shimmers[num]._connection.poll() is None) and (not quit):
+        if shimmers[num]._ready and (not quit):
             if shimmers[num]._connected:
-                shim_timeout = time.time()
-                while numbytes < framesize and (not quit):
-                    if time.time() - shim_timeout > 0.5:
-                        print(f"-----Timeout on sensor {num + 1} - {shimmers[num]._location}-----")
-                    try:
-                        ddata = ddata + shimmers[num]._serial.read(framesize)
-                    except Exception:
-                        if time.time() - shim_timeout > 0.5:
-                            print(f"Unable to read sensor {num + 1} - {shimmers[num]._location}, trying again ")
-                    numbytes = len(ddata)
-                    shim_timeout = time.time()
-
-                data = ddata[0:framesize]
-                ddata = ddata[framesize:]
-                numbytes = len(ddata)
-
-                accel = shimmers[num].calibrate_data(np.array(struct.unpack('HHH', data[4:10]), ndmin=2), 'a')
-                shimmers[num]._accel = np.vstack((shimmers[num]._accel, accel))
-                shimmers[num]._accel = shimmers[num]._accel[-WIN_LEN:, :]
-                shimmers[num]._accel = np.nan_to_num(shimmers[num]._accel)
-
-                batt_arr = np.empty((1, 0))
-                batt_now = struct.unpack('H', data[10:12])[0]*6/4095
-                batt_now = np.nan_to_num(batt_now)
-                batt_arr = np.append(batt_arr, batt_now)
-                shimmers[num]._batt = np.mean(batt_arr)
-                if len(batt_arr) == 10:
-                    batt_arr = np.delete(batt_arr, 0)
-
-                if (time.time() - batt_time) > 1:
-                    shimmers[num].checkbattery()
-                    batt_time = time.time()
-
-                gyro = shimmers[num].calibrate_data(np.array(struct.unpack('>hhh', data[12:framesize]), ndmin=2), 'g')
-                shimmers[num]._gyro = np.vstack((shimmers[num]._gyro, gyro))
-                shimmers[num]._gyro = shimmers[num]._gyro[-WIN_LEN:, :]
-                shimmers[num]._gyro = np.nan_to_num(shimmers[num]._gyro)
-
+                batt_time, ddata, numbytes = shimmers[num].getdata(num, batt_time, ddata, numbytes)
             else:
                 print(f"{shimmers[num]._location} not connected?")
 
         elif not quit:
             shimmers[num]._connected = False
-            # Try restarting connection thread
-            print(f"Lost connection, restarting connection {num+1} - {POSITIONS[num]}")
+            shimmers[num]._connection = None
+            shimmers[num]._ready = False
+            shimmers[num]._connect_error = True
             shimmers[num]._connection.kill()
-            shimmers[num].bt_connection(num)
-
+            if first_try:
+                # Try starting connection
+                print(f"Starting connection {num + 1} - {POSITIONS[num]}")
+                first_try = False
+            else:
+                # Try restarting connection
+                print(f"Lost connection, restarting connection {num+1} - {POSITIONS[num]}")
+            shimmers[num]._ready = shimmers[num].start(num)
+            print(f"{shimmers[num]._location} sensor connected, starting data stream {num + 1}...")
 
     # Quit condition
     if shimmers[num]._connected:
@@ -360,7 +365,7 @@ def IMUsensorsMain():
     print("-----Here we go-----")
     pub = rospy.Publisher('IMU_Data', String, queue_size=1)
     rospy.init_node('shimmerBase', anonymous=True)
-    rate = rospy.Rate(2)
+    rate = rospy.Rate(1)
 
     # Start separate thread for collecting data from each Shimmer
     for shimthread in range(0, numsensors):
@@ -374,11 +379,12 @@ def IMUsensorsMain():
 
     print("Starting main loop")
     while not rospy.is_shutdown():
+        print(f"ROSPY: {rospy.is_shutdown()}")
         for s in shimmers:
             ready[s] = shimmers[s]._ready
             alive[s] = shim_threads[s].isAlive()
             conn[s] = shimmers[s]._connected
-        out_str = f"Sensors Ready: {ready} Sensor Threads: {alive} Connection Threads: {conn} Total Threads: {threading.active_count()} Quit: {quit}"
+        out_str = f"Sensors Ready: {ready} Sensor Threads: {alive} Connections: {conn} Total Threads: {threading.active_count()} Quit: {quit}"
         #out_str = threading.enumerate()
         print(out_str)
 
@@ -392,12 +398,12 @@ def IMUsensorsMain():
 
             new_data = new_data[np.newaxis, ...]
 
-        if all(ready) & all(conn) & all(alive) & (not quit) & args.disp:
-            plotdata = np.empty((WIN_LEN, 0), dtype=np.float64)
-            for p in shimmers:
-                plotdata = np.hstack((plotdata, shimmers[p]._accel, shimmers[p]._gyro))
-            plotdata = np.nan_to_num(plotdata)
-            plot_func(plotdata)
+        # if all(ready) & all(conn) & all(alive) & (not quit) & args.disp:
+        #     plotdata = np.empty((WIN_LEN, 0), dtype=np.float64)
+        #     for p in shimmers:
+        #         plotdata = np.hstack((plotdata, shimmers[p]._accel, shimmers[p]._gyro))
+        #     plotdata = np.nan_to_num(plotdata)
+        #     plot_func(plotdata)
 
         #rospy.loginfo(out_str)
         pub.publish(out_str)
