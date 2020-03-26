@@ -81,6 +81,7 @@ def plot_func(plotdata):
 class shimmer():
     def __init__(self, q):
         self._ready = False
+        self._connection = None
         self._connected = False
         self._ID = SHIM_IDs[q]
         self._location = POSITIONS[q]
@@ -100,7 +101,8 @@ class shimmer():
         return
 
     def initiate(self, num):
-        while (not self._connected) & connect_threads[num].isAlive() & (not quit):
+        while (not self._connected) & (not quit):
+            time.sleep(1)
             try:
                 self._serial = serial.Serial(self._port, 115200)
                 self._connected = True
@@ -123,7 +125,11 @@ class shimmer():
                 print("  start command sending, done.")
                 #self.inquiry_response()  # Use this if you want to find the structure of data that will be streamed back
 
-            except Exception:
+            except Exception as e:
+                print(f'exception in initiate: {e}')
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
                 self._connected = False
 
     def inquiry_response(self):
@@ -199,14 +205,14 @@ class shimmer():
             print(f"found {self._location} bluetooth device with address {target_address}")
 
             # Start a new "bluetooth-agent" process where XXXX is the passkey
-            #status = subprocess.call("bluetooth-agent " + passkey + " &", shell=True)
+            subprocess.call(f"bluetooth-agent {passkey}", shell=True)
 
             try:
                 #self._connected = True
-                subprocess.run(f"sudo rfcomm connect {self._port} {target_address} 1", shell=True)
-                print(f"Quitting from {self._location} connection thread")
-                global quit
-                quit = True
+                self._connection = subprocess.Popen(f"sudo rfcomm connect {self._port} {target_address} 1", shell=True)
+                #print(f"Quitting from {self._location} connection thread")
+                #global quit
+                #quit = True
 
             except Exception as e:
                 print(f"Caught exception in connecting {self._location}: {e}")
@@ -260,10 +266,11 @@ def shimmer_thread(num):
     print(f"Setting up Sensor {num + 1}/{numsensors}")
     shimmers[num] = shimmer(num)  # Create instance of shimmer class for each device
     # Start thread for shimmer connection
-    connect_threads[num] = threading.Thread(target=shimmers[num].bt_connection, args=(num,))
-    connect_threads[num].start()
+    #connect_threads[num] = threading.Thread(target=shimmers[num].bt_connection, args=(num,))
+    #connect_threads[num].start()
+    shimmers[num].bt_connection(num)
     shimmers[num].initiate(num)  # Send set up commands, etc to shimmer
-
+    print(f'---Initiated {shimmers[num]._location} Sensor---')
     # read incoming data
     ddata = b''
     numbytes = 0
@@ -274,18 +281,20 @@ def shimmer_thread(num):
             print(f"Waiting on initial connection for {num + 1} - {shimmers[num]._location}")
             timer = time.time()
 
-            if (not connect_threads[num].isAlive()) and (not quit):
+            if (shimmers[num]._connection.poll() is not None) and (not quit):
                 shimmers[num]._connected = False
                 # Try restarting connection thread
-                print(f"Lost connection, restarting connection thread {num + 1} - {POSITIONS[num]}")
-                connect_threads[num] = threading.Thread(target=shimmers[num].bt_connection, args=(num,))
-                connect_threads[num].start()
+                print(f"Lost connection, restarting connection {num + 1} - {POSITIONS[num]}")
+                #connect_threads[num] = threading.Thread(target=shimmers[num].bt_connection, args=(num,))
+                #connect_threads[num].start()
+                shimmers[num]._connection.kill()
+                shimmers[num].bt_connection(num)
 
     print(f"{shimmers[num]._location} sensor connected, starting data stream {num + 1}...")
     shimmers[num]._ready = True
     batt_time = time.time()
     while not quit:
-        if connect_threads[num].isAlive() and not quit:
+        if (shimmers[num]._connection.poll() is None) and (not quit):
             if shimmers[num]._connected:
                 shim_timeout = time.time()
                 while numbytes < framesize and (not quit):
@@ -325,12 +334,16 @@ def shimmer_thread(num):
                 shimmers[num]._gyro = shimmers[num]._gyro[-WIN_LEN:, :]
                 shimmers[num]._gyro = np.nan_to_num(shimmers[num]._gyro)
 
+            else:
+                print(f"{shimmers[num]._location} not connected?")
+
         elif not quit:
             shimmers[num]._connected = False
             # Try restarting connection thread
-            print(f"Lost connection, restarting connection thread {num+1} - {POSITIONS[num]}")
-            connect_threads[num] = threading.Thread(target=shimmers[num].bt_connection, args=(num,))
-            connect_threads[num].start()
+            print(f"Lost connection, restarting connection {num+1} - {POSITIONS[num]}")
+            shimmers[num]._connection.kill()
+            shimmers[num].bt_connection(num)
+
 
     # Quit condition
     if shimmers[num]._connected:
@@ -364,7 +377,7 @@ def IMUsensorsMain():
         for s in shimmers:
             ready[s] = shimmers[s]._ready
             alive[s] = shim_threads[s].isAlive()
-            conn[s] = connect_threads[s].isAlive()
+            conn[s] = shimmers[s]._connected
         out_str = f"Sensors Ready: {ready} Sensor Threads: {alive} Connection Threads: {conn} Total Threads: {threading.active_count()} Quit: {quit}"
         #out_str = threading.enumerate()
         print(out_str)
@@ -392,11 +405,11 @@ def IMUsensorsMain():
 
 
 if __name__ == "__main__":
-    #subprocess.call("sudo rfcomm release all", shell=True)
+    subprocess.call("sudo rfcomm release all", shell=True)
     # kill any rfcomm connections currently active
     subprocess.call("sudo killall rfcomm", shell=True)
     # kill any "bluetooth-agent" process that is already running
-    subprocess.call("kill -9 `pidof bluetooth-agent`", shell=True)
+    #subprocess.call("kill -9 `pidof bluetooth-agent`", shell=True)
 
     try:
         IMUsensorsMain()
@@ -415,11 +428,11 @@ if __name__ == "__main__":
         if args.disp:
             plt.show()
         quit = True
-
+        subprocess.call("sudo rfcomm release all", shell=True)
         for s in shimmers:
             ready[s] = shimmers[s]._ready
             alive[s] = shim_threads[s].isAlive()
-            conn[s] = connect_threads[s].isAlive()
+            conn[s] = shimmers[s]._connected
         print(f"Shimmers ready: {ready} Threads alive: {alive} Connects alive: {conn}")
 
         print("All done")

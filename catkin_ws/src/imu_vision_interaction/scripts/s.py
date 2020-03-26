@@ -4,16 +4,18 @@ import subprocess
 import shlex
 import bluetooth
 import time
+import threading
 
 target_address = None
 ID = 'F2:C7:80'
 quit = False
 connected = False
-
+process = [None] * 1
 subprocess.run("sudo rfcomm release all", shell=True)
 subprocess.run("sudo killall rfcomm", shell=True)
 # kill any "bluetooth-agent" process that is already running
 subprocess.run("kill -9 `pidof bluetooth-agent`", shell=True)
+
 
 try:
     nearby_devices = bluetooth.discover_devices()
@@ -29,18 +31,29 @@ if target_address is not None:
     print(f"found bluetooth device with address {target_address}")
 
     try:
-        # self._connected = True
         #status = subprocess.call("bluetooth-agent " + '1234' + " &", shell=True)
-        process = subprocess.Popen(f"sudo rfcomm connect -i {target_address} 1 > out.txt", shell=True)#, stdout=subprocess.PIPE)
-        print(process.poll())
+
+        process[0] = subprocess.Popen(f"sudo rfcomm connect -i {target_address} 1", shell=True)
+
+        time.sleep(5)
+        print(process[0].poll())
         print('Connecting...')
         while True:
-            f = open("out.txt", "r")
-            print(f"out.txt: {f.read()}")
-
+            #f = open("out.txt", "r")
+            #print(f"out.txt: {f.read()}")
+            print(process[0].poll())#, thread1.is_alive())
             time.sleep(0.5)
-            if process.poll() is not None:
-                print(process.poll())
+            subprocess.call("sudo killall rfcomm", shell=True)
+            print(process[0].poll())  # , thread1.is_alive())
+            time.sleep(0.5)
+            subprocess.Popen("sudo rfcomm release all", shell=True)
+            print(process[0].poll())  # , thread1.is_alive())
+            time.sleep(0.5)
+            process[0].kill()
+            print(process[0].poll())  # , thread1.is_alive())
+            time.sleep(0.5)
+            if process[0].poll() is not None:
+                pass
             # try:
             #     output = process.stdout.read()
             # except Exception as e:
