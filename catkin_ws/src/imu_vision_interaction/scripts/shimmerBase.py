@@ -509,7 +509,7 @@ def IMUsensorsMain():
             plot_func(plotdata)
 
         #rospy.loginfo(out_str)
-        pub.publish(out_str)
+        pub.publish(prediction)
         rate.sleep()
 
 

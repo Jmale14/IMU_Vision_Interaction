@@ -13,6 +13,7 @@ model.summary()
 
 def plot_prediction(prediction):
     prediction = np.reshape(prediction, (-1))
+    plt.figure(2)
     ax = plt.gca()
     ax.cla()
     ax.bar(pos, prediction, align='center', alpha=0.5)
