@@ -92,16 +92,25 @@ class shimmer():
         self._gyro = np.zeros((WIN_LEN, 3))
         self._batt = None
         self._batt_perc = None
+        self._num = q
+        self._ddata = None
+        self._batt_time = None
+        self._numbytes = None
+        self._batt_arr = np.empty((1, 0))
 
     def wait_for_ack(self):
         ddata = b''
         ack = struct.pack('B', 0xff)
         while ddata != ack:
-            ddata = self._serial.read(1)
+            try:
+                ddata = self._serial.read(1)
+            except Exception as e:
+                print(f"Error reading acknowledgment from {self._location} sensor")
+                self._connected = False
             #print("0x%02x" % ord(ddata))
         return
 
-    def initiate(self, num):
+    def initiate(self):
         while (not self._connected) & (not self._connect_error) & (not quit):
             time.sleep(1)
             try:
@@ -152,7 +161,7 @@ class shimmer():
 
         data = ddata[0:framesize]
         ddata = ddata[framesize:]
-        numbytes = len(ddata)
+        #numbytes = len(ddata)
         (packettype) = struct.unpack('B', bytes(data[0].to_bytes(1, sys.byteorder)))
         (samplingrate, configByte0, configByte1, configByte2, configByte3, numchans, bufsize) = struct.unpack('HBBBBBB',
                                                                                                               data[1:9])
@@ -188,7 +197,7 @@ class shimmer():
         calib_data = np.transpose(Ri @ Ki @ (np.transpose(data) - offset))
         return calib_data
 
-    def bt_connection(self, num):
+    def bt_connection(self):
         count = 1
         while self._connect_error & (not quit) & (count <= 3):
             print(f"Trying to connect {self._location}, attempt {count}/3")
@@ -264,58 +273,59 @@ class shimmer():
         if (self._batt_perc != batt_last) & (self._batt_perc is not None):
             print(f"{self._location} sensor battery at {self._batt_perc}%")
 
-    def start(self, num):
+    def start(self):
         # Start thread for shimmer connection
         # connect_threads[num] = threading.Thread(target=shimmers[num].bt_connection, args=(num,))
         # connect_threads[num].start()
-        if self.bt_connection(num):
-            if self.initiate(num):  # Send set up commands, etc to shimmer
+        if self.bt_connection(self._num):
+            if self.initiate(self._num):  # Send set up commands, etc to shimmer
                 print(f'---Initiated {self._location} Sensor---')
                 return True
             else:
+                print(f"Fail to initialise {self._location} sensor")
                 return False
         else:
+            print(f"Fail to connect {self._location} sensor")
             return False
 
-    def getdata(self, num, batt_time, ddata, numbytes):
+    def getdata(self):
         framesize = 18  # 1byte packet type + 3byte timestamp + 3x2byte Analog Accel + 2byte Battery + 3x2byte Gyro
-        while numbytes < framesize and (not quit):
+        while self._numbytes < framesize and (not quit):
             if time.time() - shim_timeout > 0.5:
-                print(f"-----Timeout on sensor {num + 1} - {self._location}-----")
+                print(f"-----Timeout {self._location} sensor data, still trying-----")
             try:
-                ddata = ddata + self._serial.read(framesize)
+                self._ddata = self._ddata + self._serial.read(framesize)
             except Exception:
                 if time.time() - shim_timeout > 0.5:
-                    print(f"Unable to read sensor {num + 1} - {self._location}, trying again ")
-            numbytes = len(ddata)
+                    print(f"Unable to read sensor {self._num + 1} - {self._location}, trying again ")
+            self._numbytes = len(self._ddata)
             shim_timeout = time.time()
 
-        data = ddata[0:framesize]
-        ddata = ddata[framesize:]
-        numbytes = len(ddata)
+        data = self._ddata[0:framesize]
+        self._ddata = self._ddata[framesize:]
+        self._numbytes = len(self._ddata)
 
         accel = self.calibrate_data(np.array(struct.unpack('HHH', data[4:10]), ndmin=2), 'a')
         self._accel = np.vstack((self._accel, accel))
         self._accel = self._accel[-WIN_LEN:, :]
         self._accel = np.nan_to_num(self._accel)
 
-        batt_arr = np.empty((1, 0))
         batt_now = struct.unpack('H', data[10:12])[0] * 6 / 4095
         batt_now = np.nan_to_num(batt_now)
-        batt_arr = np.append(batt_arr, batt_now)
-        self._batt = np.mean(batt_arr)
-        if len(batt_arr) == 10:
-            batt_arr = np.delete(batt_arr, 0)
+        self._batt_arr = np.append(self._batt_arr, batt_now)
+        self._batt = np.mean(self._batt_arr)
+        if len(self._batt_arr) >= 10:
+            self._batt_arr = np.delete(self._batt_arr, :-10)
 
-        if (time.time() - batt_time) > 1:
+        if (time.time() - self._batt_time) > 1:
             self.checkbattery()
-            batt_time = time.time()
+            self._batt_time = time.time()
 
         gyro = self.calibrate_data(np.array(struct.unpack('>hhh', data[12:framesize]), ndmin=2), 'g')
         self._gyro = np.vstack((self._gyro, gyro))
         self._gyro = self._gyro[-WIN_LEN:, :]
         self._gyro = np.nan_to_num(self._gyro)
-        return batt_time, ddata, numbytes
+        return
 
 
 def shimmer_thread(num):
@@ -365,7 +375,7 @@ def IMUsensorsMain():
     print("-----Here we go-----")
     pub = rospy.Publisher('IMU_Data', String, queue_size=1)
     rospy.init_node('shimmerBase', anonymous=True)
-    rate = rospy.Rate(1)
+    rate = rospy.Rate(1)  # Message publication rate, Hz => should be 2
 
     # Start separate thread for collecting data from each Shimmer
     for shimthread in range(0, numsensors):
@@ -374,18 +384,17 @@ def IMUsensorsMain():
 
     ready = np.zeros((len(shim_threads)))  # Bool array for if shimmers are setup and streaming
     alive = np.zeros((len(shim_threads)))  # Bool array for if shimmer thread are active
-    conn = np.zeros((len(shim_threads)))  # Bool array for if connection threads are active
+    conn = np.zeros((len(shim_threads)))  # Bool array for if connections are successful
     time.sleep(1)
 
     print("Starting main loop")
-    while not rospy.is_shutdown():
-        print(f"ROSPY: {rospy.is_shutdown()}")
+    while not quit:
         for s in shimmers:
             ready[s] = shimmers[s]._ready
             alive[s] = shim_threads[s].isAlive()
             conn[s] = shimmers[s]._connected
         out_str = f"Sensors Ready: {ready} Sensor Threads: {alive} Connections: {conn} Total Threads: {threading.active_count()} Quit: {quit}"
-        #out_str = threading.enumerate()
+        out_str = threading.enumerate()
         print(out_str)
 
         new_data = np.empty((WIN_LEN, 0), dtype=np.float64)
