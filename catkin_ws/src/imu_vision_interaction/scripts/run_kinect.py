@@ -46,7 +46,7 @@ def kinect_run():
             break
 
 
-        im_screw_states = im_screw_detect.detect_screws(image, args.disp).tolist()
+        im_screw_states, tally = im_screw_detect.detect_screws(image, args.disp).tolist()
 
         # safe_move = camera.safetomove(image)  # Needs work
 
@@ -54,6 +54,7 @@ def kinect_run():
         msg.im_screw_probs_2 = im_screw_states[1]
         msg.im_screw_probs_3 = im_screw_states[2]
         msg.im_screw_probs_4 = im_screw_states[3]
+        msg.tally = tally
 
         msg.safe_move = False
         pub.publish(msg)

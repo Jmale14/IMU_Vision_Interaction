@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # https://www.learnopencv.com/blob-detection-using-opencv-python-c/
 # Paper 'Multimodal Control for Human-Robot Cooperation'
 # https://github.com/ShubhamCpp/Circle-Detection-in-Real-Time
@@ -221,4 +223,4 @@ class ImScrewDetector:
             print(tally)
             self._lasttime = time.time()
 
-        return im_screw_probs
+        return im_screw_probs, tally
