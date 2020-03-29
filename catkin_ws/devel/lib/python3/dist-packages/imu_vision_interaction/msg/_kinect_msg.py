@@ -7,16 +7,17 @@ import struct
 
 
 class kinect_msg(genpy.Message):
-  _md5sum = "a2edb252d0d37f6b395cd5f25d43ffd5"
+  _md5sum = "7d063af4b46c588d600951ce9d186617"
   _type = "imu_vision_interaction/kinect_msg"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """float64[5] im_screw_probs_1
 float64[5] im_screw_probs_2
 float64[5] im_screw_probs_3
 float64[5] im_screw_probs_4
+float64[5] tally
 bool safe_move"""
-  __slots__ = ['im_screw_probs_1','im_screw_probs_2','im_screw_probs_3','im_screw_probs_4','safe_move']
-  _slot_types = ['float64[5]','float64[5]','float64[5]','float64[5]','bool']
+  __slots__ = ['im_screw_probs_1','im_screw_probs_2','im_screw_probs_3','im_screw_probs_4','tally','safe_move']
+  _slot_types = ['float64[5]','float64[5]','float64[5]','float64[5]','float64[5]','bool']
 
   def __init__(self, *args, **kwds):
     """
@@ -26,7 +27,7 @@ bool safe_move"""
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       im_screw_probs_1,im_screw_probs_2,im_screw_probs_3,im_screw_probs_4,safe_move
+       im_screw_probs_1,im_screw_probs_2,im_screw_probs_3,im_screw_probs_4,tally,safe_move
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -43,6 +44,8 @@ bool safe_move"""
         self.im_screw_probs_3 = [0.] * 5
       if self.im_screw_probs_4 is None:
         self.im_screw_probs_4 = [0.] * 5
+      if self.tally is None:
+        self.tally = [0.] * 5
       if self.safe_move is None:
         self.safe_move = False
     else:
@@ -50,6 +53,7 @@ bool safe_move"""
       self.im_screw_probs_2 = [0.] * 5
       self.im_screw_probs_3 = [0.] * 5
       self.im_screw_probs_4 = [0.] * 5
+      self.tally = [0.] * 5
       self.safe_move = False
 
   def _get_types(self):
@@ -68,6 +72,7 @@ bool safe_move"""
       buff.write(_get_struct_5d().pack(*self.im_screw_probs_2))
       buff.write(_get_struct_5d().pack(*self.im_screw_probs_3))
       buff.write(_get_struct_5d().pack(*self.im_screw_probs_4))
+      buff.write(_get_struct_5d().pack(*self.tally))
       buff.write(_get_struct_B().pack(self.safe_move))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
@@ -92,6 +97,9 @@ bool safe_move"""
       end += 40
       self.im_screw_probs_4 = _get_struct_5d().unpack(str[start:end])
       start = end
+      end += 40
+      self.tally = _get_struct_5d().unpack(str[start:end])
+      start = end
       end += 1
       (self.safe_move,) = _get_struct_B().unpack(str[start:end])
       self.safe_move = bool(self.safe_move)
@@ -111,6 +119,7 @@ bool safe_move"""
       buff.write(self.im_screw_probs_2.tostring())
       buff.write(self.im_screw_probs_3.tostring())
       buff.write(self.im_screw_probs_4.tostring())
+      buff.write(self.tally.tostring())
       buff.write(_get_struct_B().pack(self.safe_move))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
@@ -135,6 +144,9 @@ bool safe_move"""
       start = end
       end += 40
       self.im_screw_probs_4 = numpy.frombuffer(str[start:end], dtype=numpy.float64, count=5)
+      start = end
+      end += 40
+      self.tally = numpy.frombuffer(str[start:end], dtype=numpy.float64, count=5)
       start = end
       end += 1
       (self.safe_move,) = _get_struct_B().unpack(str[start:end])

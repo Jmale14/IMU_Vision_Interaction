@@ -28,6 +28,7 @@ struct kinect_msg_
     , im_screw_probs_2()
     , im_screw_probs_3()
     , im_screw_probs_4()
+    , tally()
     , safe_move(false)  {
       im_screw_probs_1.assign(0.0);
 
@@ -36,12 +37,15 @@ struct kinect_msg_
       im_screw_probs_3.assign(0.0);
 
       im_screw_probs_4.assign(0.0);
+
+      tally.assign(0.0);
   }
   kinect_msg_(const ContainerAllocator& _alloc)
     : im_screw_probs_1()
     , im_screw_probs_2()
     , im_screw_probs_3()
     , im_screw_probs_4()
+    , tally()
     , safe_move(false)  {
   (void)_alloc;
       im_screw_probs_1.assign(0.0);
@@ -51,6 +55,8 @@ struct kinect_msg_
       im_screw_probs_3.assign(0.0);
 
       im_screw_probs_4.assign(0.0);
+
+      tally.assign(0.0);
   }
 
 
@@ -66,6 +72,9 @@ struct kinect_msg_
 
    typedef boost::array<double, 5>  _im_screw_probs_4_type;
   _im_screw_probs_4_type im_screw_probs_4;
+
+   typedef boost::array<double, 5>  _tally_type;
+  _tally_type tally;
 
    typedef uint8_t _safe_move_type;
   _safe_move_type safe_move;
@@ -103,6 +112,7 @@ bool operator==(const ::imu_vision_interaction::kinect_msg_<ContainerAllocator1>
     lhs.im_screw_probs_2 == rhs.im_screw_probs_2 &&
     lhs.im_screw_probs_3 == rhs.im_screw_probs_3 &&
     lhs.im_screw_probs_4 == rhs.im_screw_probs_4 &&
+    lhs.tally == rhs.tally &&
     lhs.safe_move == rhs.safe_move;
 }
 
@@ -160,12 +170,12 @@ struct MD5Sum< ::imu_vision_interaction::kinect_msg_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "a2edb252d0d37f6b395cd5f25d43ffd5";
+    return "7d063af4b46c588d600951ce9d186617";
   }
 
   static const char* value(const ::imu_vision_interaction::kinect_msg_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xa2edb252d0d37f6bULL;
-  static const uint64_t static_value2 = 0x395cd5f25d43ffd5ULL;
+  static const uint64_t static_value1 = 0x7d063af4b46c588dULL;
+  static const uint64_t static_value2 = 0x600951ce9d186617ULL;
 };
 
 template<class ContainerAllocator>
@@ -188,6 +198,7 @@ struct Definition< ::imu_vision_interaction::kinect_msg_<ContainerAllocator> >
 "float64[5] im_screw_probs_2\n"
 "float64[5] im_screw_probs_3\n"
 "float64[5] im_screw_probs_4\n"
+"float64[5] tally\n"
 "bool safe_move\n"
 ;
   }
@@ -211,6 +222,7 @@ namespace serialization
       stream.next(m.im_screw_probs_2);
       stream.next(m.im_screw_probs_3);
       stream.next(m.im_screw_probs_4);
+      stream.next(m.tally);
       stream.next(m.safe_move);
     }
 
@@ -253,6 +265,12 @@ struct Printer< ::imu_vision_interaction::kinect_msg_<ContainerAllocator> >
     {
       s << indent << "  im_screw_probs_4[" << i << "]: ";
       Printer<double>::stream(s, indent + "  ", v.im_screw_probs_4[i]);
+    }
+    s << indent << "tally[]" << std::endl;
+    for (size_t i = 0; i < v.tally.size(); ++i)
+    {
+      s << indent << "  tally[" << i << "]: ";
+      Printer<double>::stream(s, indent + "  ", v.tally[i]);
     }
     s << indent << "safe_move: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.safe_move);

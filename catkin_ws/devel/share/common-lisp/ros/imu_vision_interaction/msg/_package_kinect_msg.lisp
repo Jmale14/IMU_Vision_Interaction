@@ -7,6 +7,8 @@
           IM_SCREW_PROBS_3
           IM_SCREW_PROBS_4-VAL
           IM_SCREW_PROBS_4
+          TALLY-VAL
+          TALLY
           SAFE_MOVE-VAL
           SAFE_MOVE
 ))

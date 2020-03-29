@@ -14,7 +14,7 @@ import glob
 import signal
 import subprocess
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import Int8
 import socket
 import io
 import shlex
@@ -462,7 +462,7 @@ def shimmer_thread(num):
 
 def IMUsensorsMain():
     print("-----Here we go-----")
-    pub = rospy.Publisher('IMU_Data', String, queue_size=1)
+    pub = rospy.Publisher('IMU_Data', Int8, queue_size=1)
     rospy.init_node('shimmerBase', anonymous=True)
     rate = rospy.Rate(1)  # Message publication rate, Hz => should be 2
     prediction = None

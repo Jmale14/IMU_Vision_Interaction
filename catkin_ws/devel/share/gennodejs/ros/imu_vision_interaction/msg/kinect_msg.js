@@ -22,6 +22,7 @@ class kinect_msg {
       this.im_screw_probs_2 = null;
       this.im_screw_probs_3 = null;
       this.im_screw_probs_4 = null;
+      this.tally = null;
       this.safe_move = null;
     }
     else {
@@ -48,6 +49,12 @@ class kinect_msg {
       }
       else {
         this.im_screw_probs_4 = new Array(5).fill(0);
+      }
+      if (initObj.hasOwnProperty('tally')) {
+        this.tally = initObj.tally
+      }
+      else {
+        this.tally = new Array(5).fill(0);
       }
       if (initObj.hasOwnProperty('safe_move')) {
         this.safe_move = initObj.safe_move
@@ -84,6 +91,12 @@ class kinect_msg {
     }
     // Serialize message field [im_screw_probs_4]
     bufferOffset = _arraySerializer.float64(obj.im_screw_probs_4, buffer, bufferOffset, 5);
+    // Check that the constant length array field [tally] has the right length
+    if (obj.tally.length !== 5) {
+      throw new Error('Unable to serialize array field tally - length must be 5')
+    }
+    // Serialize message field [tally]
+    bufferOffset = _arraySerializer.float64(obj.tally, buffer, bufferOffset, 5);
     // Serialize message field [safe_move]
     bufferOffset = _serializer.bool(obj.safe_move, buffer, bufferOffset);
     return bufferOffset;
@@ -101,13 +114,15 @@ class kinect_msg {
     data.im_screw_probs_3 = _arrayDeserializer.float64(buffer, bufferOffset, 5)
     // Deserialize message field [im_screw_probs_4]
     data.im_screw_probs_4 = _arrayDeserializer.float64(buffer, bufferOffset, 5)
+    // Deserialize message field [tally]
+    data.tally = _arrayDeserializer.float64(buffer, bufferOffset, 5)
     // Deserialize message field [safe_move]
     data.safe_move = _deserializer.bool(buffer, bufferOffset);
     return data;
   }
 
   static getMessageSize(object) {
-    return 161;
+    return 201;
   }
 
   static datatype() {
@@ -117,7 +132,7 @@ class kinect_msg {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return 'a2edb252d0d37f6b395cd5f25d43ffd5';
+    return '7d063af4b46c588d600951ce9d186617';
   }
 
   static messageDefinition() {
@@ -127,6 +142,7 @@ class kinect_msg {
     float64[5] im_screw_probs_2
     float64[5] im_screw_probs_3
     float64[5] im_screw_probs_4
+    float64[5] tally
     bool safe_move
     `;
   }
@@ -163,6 +179,13 @@ class kinect_msg {
     }
     else {
       resolved.im_screw_probs_4 = new Array(5).fill(0)
+    }
+
+    if (msg.tally !== undefined) {
+      resolved.tally = msg.tally;
+    }
+    else {
+      resolved.tally = new Array(5).fill(0)
     }
 
     if (msg.safe_move !== undefined) {
