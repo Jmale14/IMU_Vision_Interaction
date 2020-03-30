@@ -350,6 +350,19 @@ imu_vision_interaction_generate_messages_eus/fast:
 .PHONY : imu_vision_interaction_generate_messages_eus/fast
 
 #=============================================================================
+# Target rules for targets named _imu_vision_interaction_generate_messages_check_deps_IMU_msg
+
+# Build rule for target.
+_imu_vision_interaction_generate_messages_check_deps_IMU_msg: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 _imu_vision_interaction_generate_messages_check_deps_IMU_msg
+.PHONY : _imu_vision_interaction_generate_messages_check_deps_IMU_msg
+
+# fast build rule for target.
+_imu_vision_interaction_generate_messages_check_deps_IMU_msg/fast:
+	$(MAKE) -f imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/build.make imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/build
+.PHONY : _imu_vision_interaction_generate_messages_check_deps_IMU_msg/fast
+
+#=============================================================================
 # Target rules for targets named _imu_vision_interaction_generate_messages_check_deps_kinect_msg
 
 # Build rule for target.
@@ -662,6 +675,7 @@ help:
 	@echo "... imu_vision_interaction_generate_messages_lisp"
 	@echo "... imu_vision_interaction_geneus"
 	@echo "... imu_vision_interaction_generate_messages_eus"
+	@echo "... _imu_vision_interaction_generate_messages_check_deps_IMU_msg"
 	@echo "... _imu_vision_interaction_generate_messages_check_deps_kinect_msg"
 	@echo "... imu_vision_interaction_generate_messages_nodejs"
 	@echo "... roscpp_generate_messages_py"

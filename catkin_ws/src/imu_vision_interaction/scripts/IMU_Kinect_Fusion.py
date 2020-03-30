@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import rospy
-from std_msgs.msg import String, Int8
-from imu_vision_interaction.msg import kinect_msg
+from std_msgs.msg import String, Int8, Float64
+from imu_vision_interaction.msg import kinect_msg, IMU_msg
 import cv2
 import numpy as np
 import time
@@ -11,10 +11,12 @@ import argparse
 import matplotlib.pyplot as plt
 
 
+imu_pred = np.zeros(5)
 im_screw_hist = np.zeros((1, 3), dtype=np.int)
 timer = time.time()
 imu_state_hist = np.array([4, 4, 4], dtype=np.int)
 CATEGORIES = ['AllenKeyIn', 'AllenKeyOut', 'ScrewingIn', 'ScrewingOut', 'Null']
+pos = np.arange(len(CATEGORIES))
 
 parser = argparse.ArgumentParser(
         description='Fusion of screw/bolt state estimation from IMU and vision sources')
@@ -28,7 +30,7 @@ args = parser.parse_args()
 
 if args.disp:
     plt.ion()
-    fig, axs = plt.subplots(2)
+    fig, axs = plt.subplots(2, 2)
 
 
 class StateEst:
@@ -40,11 +42,12 @@ class StateEst:
 
 def plot_estimation():
     global state_est
+    global CATEGORIES
     legend = ['Image', 'IMU', 'Final']
-    Titles = ['Screws', 'Bolts']
+    Titles = ['Total No. Screws', 'Total No. Bolts']
     global axs
     for i in range(0, 2):
-        ax = axs[i]
+        ax = axs[0, i]
         ax.cla()
         ax.plot(state_est._im[:, i])
         ax.plot(state_est._imu[:, i])
@@ -52,8 +55,28 @@ def plot_estimation():
         ax.set_ylabel('Estimated Number')
         ax.set_title(Titles[i])
         ax.legend(legend)
+        ax.set_ylim(bottom=0)
+
+    ax = axs[1, 0]
+    ax.cla()
+    ax.bar(pos, imu_pred, align='center', alpha=0.5)
+    ax.set_xticks(pos)
+    ax.set_xticklabels(CATEGORIES)
+    ax.set_ylabel('Confidence')
+    ax.set_ylim([0, 1])
+    ax.set_title('Current IMU Prediction')
+
+    ax = axs[1, 1]
+    ax.cla()
+    ax.bar([1, 2], [im_screw_hist[-1, 1], im_screw_hist[-1, 2]], align='center', alpha=0.5)
+    ax.set_xticks([1, 2])
+    ax.set_xticklabels(['Screws', 'Bolts'])
+    ax.set_ylabel('Confidence')
+    ax.set_ylim([0, 4])
+    ax.set_title('Current image Prediction')
 
     plt.pause(0.0001)
+
 
 
 state_est = StateEst()
@@ -63,7 +86,9 @@ def imu_callback(data):
     global imu_state_hist
     global im_screw_hist
     global state_est
-    imu_state_hist = np.hstack((imu_state_hist, data.data))
+    global imu_pred
+    imu_pred = data.imu_msg
+    imu_state_hist = np.hstack((imu_state_hist, np.argmax(imu_pred)))
     #rospy.loginfo(rospy.get_caller_id() + ' - I heard %s', data.data)
 
     cutoff_t = time.time() - 5
@@ -91,7 +116,7 @@ def IMU_listener():
 
     rospy.init_node('IMU_listener', anonymous=True)
 
-    rospy.Subscriber('IMU_Data', Int8, imu_callback)
+    rospy.Subscriber('IMU_Data', IMU_msg, imu_callback)
     rospy.Subscriber('Image_Screws', kinect_msg, imscrews_callback)
 
 

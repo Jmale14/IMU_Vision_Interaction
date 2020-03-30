@@ -243,6 +243,21 @@ imu_vision_interaction_generate_messages_eus/fast:
 .PHONY : imu_vision_interaction_generate_messages_eus/fast
 
 # Convenience name for target.
+imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/rule:
+	cd /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/rule
+.PHONY : imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/rule
+
+# Convenience name for target.
+_imu_vision_interaction_generate_messages_check_deps_IMU_msg: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/rule
+
+.PHONY : _imu_vision_interaction_generate_messages_check_deps_IMU_msg
+
+# fast build rule for target.
+_imu_vision_interaction_generate_messages_check_deps_IMU_msg/fast:
+	cd /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build && $(MAKE) -f imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/build.make imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/build
+.PHONY : _imu_vision_interaction_generate_messages_check_deps_IMU_msg/fast
+
+# Convenience name for target.
 imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_kinect_msg.dir/rule:
 	cd /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_kinect_msg.dir/rule
 .PHONY : imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_kinect_msg.dir/rule
@@ -586,6 +601,7 @@ help:
 	@echo "... imu_vision_interaction_geneus"
 	@echo "... test"
 	@echo "... imu_vision_interaction_generate_messages_eus"
+	@echo "... _imu_vision_interaction_generate_messages_check_deps_IMU_msg"
 	@echo "... install/strip"
 	@echo "... _imu_vision_interaction_generate_messages_check_deps_kinect_msg"
 	@echo "... list_install_components"

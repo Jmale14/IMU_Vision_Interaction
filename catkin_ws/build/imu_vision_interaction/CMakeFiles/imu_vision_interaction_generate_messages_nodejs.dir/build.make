@@ -54,6 +54,7 @@ CMAKE_BINARY_DIR = /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/
 include imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/progress.make
 
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/kinect_msg.js
+imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/IMU_msg.js
 
 
 /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/kinect_msg.js: /opt/ros/melodic/lib/gennodejs/gen_nodejs.py
@@ -61,8 +62,14 @@ imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodej
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Javascript code from imu_vision_interaction/kinect_msg.msg"
 	cd /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/imu_vision_interaction && ../catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/melodic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg -Iimu_vision_interaction:/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p imu_vision_interaction -o /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg
 
+/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/IMU_msg.js: /opt/ros/melodic/lib/gennodejs/gen_nodejs.py
+/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/IMU_msg.js: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Javascript code from imu_vision_interaction/IMU_msg.msg"
+	cd /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/imu_vision_interaction && ../catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/melodic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg -Iimu_vision_interaction:/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p imu_vision_interaction -o /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg
+
 imu_vision_interaction_generate_messages_nodejs: imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs
 imu_vision_interaction_generate_messages_nodejs: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/kinect_msg.js
+imu_vision_interaction_generate_messages_nodejs: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/IMU_msg.js
 imu_vision_interaction_generate_messages_nodejs: imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/build.make
 
 .PHONY : imu_vision_interaction_generate_messages_nodejs

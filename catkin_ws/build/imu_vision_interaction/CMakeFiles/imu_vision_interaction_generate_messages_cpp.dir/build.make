@@ -54,6 +54,7 @@ CMAKE_BINARY_DIR = /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/
 include imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/progress.make
 
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction/kinect_msg.h
+imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction/IMU_msg.h
 
 
 /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction/kinect_msg.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
@@ -62,8 +63,15 @@ imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp: 
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from imu_vision_interaction/kinect_msg.msg"
 	cd /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction && /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg -Iimu_vision_interaction:/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p imu_vision_interaction -o /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction -e /opt/ros/melodic/share/gencpp/cmake/..
 
+/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction/IMU_msg.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
+/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction/IMU_msg.h: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg
+/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction/IMU_msg.h: /opt/ros/melodic/share/gencpp/msg.h.template
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating C++ code from imu_vision_interaction/IMU_msg.msg"
+	cd /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction && /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg -Iimu_vision_interaction:/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p imu_vision_interaction -o /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction -e /opt/ros/melodic/share/gencpp/cmake/..
+
 imu_vision_interaction_generate_messages_cpp: imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp
 imu_vision_interaction_generate_messages_cpp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction/kinect_msg.h
+imu_vision_interaction_generate_messages_cpp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/include/imu_vision_interaction/IMU_msg.h
 imu_vision_interaction_generate_messages_cpp: imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/build.make
 
 .PHONY : imu_vision_interaction_generate_messages_cpp

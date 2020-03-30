@@ -38,7 +38,7 @@ def classify_data(new_data, graph):
         if graph:
             plot_prediction(prediction)
 
-        return class_predict
+        return prediction
 
     else:
         return None

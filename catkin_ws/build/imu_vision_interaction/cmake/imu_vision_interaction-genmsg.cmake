@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(STATUS "imu_vision_interaction: 1 messages, 0 services")
+message(STATUS "imu_vision_interaction: 2 messages, 0 services")
 
 set(MSG_I_FLAGS "-Iimu_vision_interaction:/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg;-Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg")
 
@@ -22,6 +22,11 @@ add_custom_target(_imu_vision_interaction_generate_messages_check_deps_${_filena
   COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "imu_vision_interaction" "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg" ""
 )
 
+get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg" NAME_WE)
+add_custom_target(_imu_vision_interaction_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "imu_vision_interaction" "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg" ""
+)
+
 #
 #  langs = gencpp;geneus;genlisp;gennodejs;genpy
 #
@@ -30,6 +35,12 @@ add_custom_target(_imu_vision_interaction_generate_messages_check_deps_${_filena
 ### Generating Messages
 _generate_msg_cpp(imu_vision_interaction
   "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/imu_vision_interaction
+)
+_generate_msg_cpp(imu_vision_interaction
+  "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/imu_vision_interaction
@@ -51,6 +62,8 @@ add_dependencies(imu_vision_interaction_generate_messages imu_vision_interaction
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg" NAME_WE)
 add_dependencies(imu_vision_interaction_generate_messages_cpp _imu_vision_interaction_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg" NAME_WE)
+add_dependencies(imu_vision_interaction_generate_messages_cpp _imu_vision_interaction_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(imu_vision_interaction_gencpp)
@@ -63,6 +76,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS imu_vision_interaction_generate_mes
 ### Generating Messages
 _generate_msg_eus(imu_vision_interaction
   "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/imu_vision_interaction
+)
+_generate_msg_eus(imu_vision_interaction
+  "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/imu_vision_interaction
@@ -84,6 +103,8 @@ add_dependencies(imu_vision_interaction_generate_messages imu_vision_interaction
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg" NAME_WE)
 add_dependencies(imu_vision_interaction_generate_messages_eus _imu_vision_interaction_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg" NAME_WE)
+add_dependencies(imu_vision_interaction_generate_messages_eus _imu_vision_interaction_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(imu_vision_interaction_geneus)
@@ -96,6 +117,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS imu_vision_interaction_generate_mes
 ### Generating Messages
 _generate_msg_lisp(imu_vision_interaction
   "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/imu_vision_interaction
+)
+_generate_msg_lisp(imu_vision_interaction
+  "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/imu_vision_interaction
@@ -117,6 +144,8 @@ add_dependencies(imu_vision_interaction_generate_messages imu_vision_interaction
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg" NAME_WE)
 add_dependencies(imu_vision_interaction_generate_messages_lisp _imu_vision_interaction_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg" NAME_WE)
+add_dependencies(imu_vision_interaction_generate_messages_lisp _imu_vision_interaction_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(imu_vision_interaction_genlisp)
@@ -129,6 +158,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS imu_vision_interaction_generate_mes
 ### Generating Messages
 _generate_msg_nodejs(imu_vision_interaction
   "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/imu_vision_interaction
+)
+_generate_msg_nodejs(imu_vision_interaction
+  "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/imu_vision_interaction
@@ -150,6 +185,8 @@ add_dependencies(imu_vision_interaction_generate_messages imu_vision_interaction
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg" NAME_WE)
 add_dependencies(imu_vision_interaction_generate_messages_nodejs _imu_vision_interaction_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg" NAME_WE)
+add_dependencies(imu_vision_interaction_generate_messages_nodejs _imu_vision_interaction_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(imu_vision_interaction_gennodejs)
@@ -162,6 +199,12 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS imu_vision_interaction_generate_mes
 ### Generating Messages
 _generate_msg_py(imu_vision_interaction
   "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/imu_vision_interaction
+)
+_generate_msg_py(imu_vision_interaction
+  "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/imu_vision_interaction
@@ -182,6 +225,8 @@ add_dependencies(imu_vision_interaction_generate_messages imu_vision_interaction
 
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg" NAME_WE)
+add_dependencies(imu_vision_interaction_generate_messages_py _imu_vision_interaction_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg" NAME_WE)
 add_dependencies(imu_vision_interaction_generate_messages_py _imu_vision_interaction_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility

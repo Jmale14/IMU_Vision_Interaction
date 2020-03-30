@@ -14,11 +14,12 @@ import glob
 import signal
 import subprocess
 import rospy
-from std_msgs.msg import Int8
+from std_msgs.msg import Int8, Float64
 import socket
 import io
 import shlex
 from imu_classifier import classify_data
+from imu_vision_interaction.msg import IMU_msg
 
 # Argument parsing
 parser = argparse.ArgumentParser(
@@ -183,7 +184,7 @@ class shimmer():
                 #self.inquiry_response()  # Use this if you want to find the structure of data that will be streamed back
 
             except Exception as e:
-                print(f'exception in initiate: {e}')
+                print(f'exception in {self._location} initiate: {e}')
                 self._connected = False
         return True
 
@@ -462,10 +463,11 @@ def shimmer_thread(num):
 
 def IMUsensorsMain():
     print("-----Here we go-----")
-    pub = rospy.Publisher('IMU_Data', Int8, queue_size=1)
+    pub = rospy.Publisher('IMU_Data', IMU_msg, queue_size=1)
     rospy.init_node('shimmerBase', anonymous=True)
-    rate = rospy.Rate(1)  # Message publication rate, Hz => should be 2
-    prediction = None
+    rate = rospy.Rate(2)  # Message publication rate, Hz => should be 2
+    prediction = np.zeros(5)
+
 
     # Start separate thread for collecting data from each Shimmer
     for shimthread in range(0, numsensors):
@@ -479,17 +481,20 @@ def IMUsensorsMain():
     time.sleep(1)
 
     print("Starting main loop")
+    msg = IMU_msg()
+    class_pred = CATEGORIES[-1]
     while not quit_IMU:
+
         for s in shimmers:
             ready[s] = shimmers[s]._ready
             alive[s] = shim_threads[s].isAlive()
             conn[s] = shimmers[s]._connected
             s_down[s] = shimmers[s]._shutdown
         out_str = f"Sensors Ready:{ready} Threads:{alive} Connections:{conn} Shutdowns:{s_down} " \
-                  f"Total Threads:{threading.active_count()} Quit:{quit_IMU} Prediction:{prediction}"
+                  f"Total Threads:{threading.active_count()} Quit:{quit_IMU} Prediction:{class_pred}"
         #out_str = threading.enumerate()
         print(out_str)
-
+        class_pred = CATEGORIES[-1]
         new_data = np.empty((WIN_LEN, 0), dtype=np.float64)
         if all(ready) & all(conn) & all(alive):
             for p in shimmers:
@@ -500,6 +505,8 @@ def IMUsensorsMain():
 
             if args.classify:
                 prediction = classify_data(new_data, args.bar)
+                prediction = np.reshape(prediction, (-1))
+                class_pred = CATEGORIES[np.argmax(prediction)]
 
         if all(ready) & all(conn) & all(alive) & (not quit_IMU) & args.disp:
             plotdata = np.empty((WIN_LEN, 0), dtype=np.float64)
@@ -509,7 +516,8 @@ def IMUsensorsMain():
             plot_func(plotdata)
 
         #rospy.loginfo(out_str)
-        pub.publish(prediction)
+        msg.imu_msg = prediction.tolist()
+        pub.publish(msg)
         rate.sleep()
 
 
