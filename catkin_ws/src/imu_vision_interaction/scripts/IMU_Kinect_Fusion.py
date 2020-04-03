@@ -9,7 +9,7 @@ import time
 from state_estimators import current_state_est
 import argparse
 import matplotlib.pyplot as plt
-
+from gui import setup_gui, update_gui
 
 imu_pred = np.zeros(5)
 im_screw_hist = np.zeros((1, 3), dtype=np.int)
