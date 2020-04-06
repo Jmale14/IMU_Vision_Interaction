@@ -5,7 +5,7 @@ project(imu_vision_interaction)
 # add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS zdfb)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -53,6 +53,7 @@ add_message_files(
   FILES
   kinect_msg.msg
   IMU_msg.msg
+  gui_msg.msg
 )
 
 ## Generate services in the 'srv' folder

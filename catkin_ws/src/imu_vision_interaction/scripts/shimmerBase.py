@@ -62,7 +62,7 @@ shimmers = {}
 shim_threads = {}
 connect_threads = {}
 quit_IMU = False
-passkey = "1234"  # passkey of the device you want to connect
+passkey = "1234"  # passkey of shimmers
 pos = np.arange(len(CATEGORIES))
 
 if args.disp:
@@ -132,6 +132,7 @@ class shimmer():
         self._numbytes = 0
         self._batt_arr = np.empty((1, 0))
         self._shutdown = True
+        self._status = 4
         rospy.on_shutdown(self.shutdown)
 
     def wait_for_ack(self):
@@ -168,6 +169,7 @@ class shimmer():
                 if not self.wait_for_ack():
                     return False
                 self._connected = True
+                self._status = 6
                 print(f"---{self._location} sensor setting, done.")
                 # send the set sampling rate command
                 self._serial.write(
@@ -246,6 +248,7 @@ class shimmer():
 
     def bt_connection(self):
         count = 1
+        self._status = 5
         while self._connect_error & (not quit_IMU) & (count <= 3):
             print(f"Trying to connect {self._location}, attempt {count}/3")
             target_address = None
@@ -393,6 +396,7 @@ class shimmer():
         self._gyro = np.vstack((self._gyro, gyro))
         self._gyro = self._gyro[-WIN_LEN:, :]
         self._gyro = np.nan_to_num(self._gyro)
+        self._status = 1
         return True
 
     def shutdown(self):
@@ -483,13 +487,15 @@ def IMUsensorsMain():
     print("Starting main loop")
     msg = IMU_msg()
     class_pred = CATEGORIES[-1]
+    status = [2, 2, 2, 2]
     while not quit_IMU:
-
+        status[3] = 2
         for s in shimmers:
             ready[s] = shimmers[s]._ready
             alive[s] = shim_threads[s].isAlive()
             conn[s] = shimmers[s]._connected
             s_down[s] = shimmers[s]._shutdown
+            status[s] = shimmers[s]._status
         out_str = f"Sensors Ready:{ready} Threads:{alive} Connections:{conn} Shutdowns:{s_down} " \
                   f"Total Threads:{threading.active_count()} Quit:{quit_IMU} Prediction:{class_pred}"
         #out_str = threading.enumerate()
@@ -502,6 +508,7 @@ def IMUsensorsMain():
             new_data = np.nan_to_num(new_data)
             for i in range(0, new_data.shape[1]):
                 new_data[:, i] = preprocessing.scale(new_data[:, i])
+            status[3] = 1
 
             if args.classify:
                 prediction = classify_data(new_data, args.bar)
@@ -517,6 +524,7 @@ def IMUsensorsMain():
 
         #rospy.loginfo(out_str)
         msg.imu_msg = prediction.tolist()
+        msg.imu_stat = status
         pub.publish(msg)
         rate.sleep()
 

@@ -29,7 +29,8 @@ struct kinect_msg_
     , im_screw_probs_3()
     , im_screw_probs_4()
     , tally()
-    , safe_move(false)  {
+    , safe_move(false)
+    , im_stat(0)  {
       im_screw_probs_1.assign(0.0);
 
       im_screw_probs_2.assign(0.0);
@@ -46,7 +47,8 @@ struct kinect_msg_
     , im_screw_probs_3()
     , im_screw_probs_4()
     , tally()
-    , safe_move(false)  {
+    , safe_move(false)
+    , im_stat(0)  {
   (void)_alloc;
       im_screw_probs_1.assign(0.0);
 
@@ -78,6 +80,9 @@ struct kinect_msg_
 
    typedef uint8_t _safe_move_type;
   _safe_move_type safe_move;
+
+   typedef int8_t _im_stat_type;
+  _im_stat_type im_stat;
 
 
 
@@ -113,7 +118,8 @@ bool operator==(const ::imu_vision_interaction::kinect_msg_<ContainerAllocator1>
     lhs.im_screw_probs_3 == rhs.im_screw_probs_3 &&
     lhs.im_screw_probs_4 == rhs.im_screw_probs_4 &&
     lhs.tally == rhs.tally &&
-    lhs.safe_move == rhs.safe_move;
+    lhs.safe_move == rhs.safe_move &&
+    lhs.im_stat == rhs.im_stat;
 }
 
 template<typename ContainerAllocator1, typename ContainerAllocator2>
@@ -170,12 +176,12 @@ struct MD5Sum< ::imu_vision_interaction::kinect_msg_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "7d063af4b46c588d600951ce9d186617";
+    return "662361b7d3d4f58e85a3c72705f8eef3";
   }
 
   static const char* value(const ::imu_vision_interaction::kinect_msg_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x7d063af4b46c588dULL;
-  static const uint64_t static_value2 = 0x600951ce9d186617ULL;
+  static const uint64_t static_value1 = 0x662361b7d3d4f58eULL;
+  static const uint64_t static_value2 = 0x85a3c72705f8eef3ULL;
 };
 
 template<class ContainerAllocator>
@@ -200,6 +206,7 @@ struct Definition< ::imu_vision_interaction::kinect_msg_<ContainerAllocator> >
 "float64[5] im_screw_probs_4\n"
 "float64[5] tally\n"
 "bool safe_move\n"
+"int8 im_stat\n"
 ;
   }
 
@@ -224,6 +231,7 @@ namespace serialization
       stream.next(m.im_screw_probs_4);
       stream.next(m.tally);
       stream.next(m.safe_move);
+      stream.next(m.im_stat);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -274,6 +282,8 @@ struct Printer< ::imu_vision_interaction::kinect_msg_<ContainerAllocator> >
     }
     s << indent << "safe_move: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.safe_move);
+    s << indent << "im_stat: ";
+    Printer<int8_t>::stream(s, indent + "  ", v.im_stat);
   }
 };
 

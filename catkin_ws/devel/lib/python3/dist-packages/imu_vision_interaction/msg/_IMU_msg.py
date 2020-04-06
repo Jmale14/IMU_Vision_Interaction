@@ -7,13 +7,13 @@ import struct
 
 
 class IMU_msg(genpy.Message):
-  _md5sum = "f487f171bce2552e381aa73a58773243"
+  _md5sum = "affaccaeab02b87844ca1675a87c3358"
   _type = "imu_vision_interaction/IMU_msg"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """float64[5] imu_msg
-"""
-  __slots__ = ['imu_msg']
-  _slot_types = ['float64[5]']
+int8[4] imu_stat"""
+  __slots__ = ['imu_msg','imu_stat']
+  _slot_types = ['float64[5]','int8[4]']
 
   def __init__(self, *args, **kwds):
     """
@@ -23,7 +23,7 @@ class IMU_msg(genpy.Message):
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       imu_msg
+       imu_msg,imu_stat
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -34,8 +34,11 @@ class IMU_msg(genpy.Message):
       #message fields cannot be None, assign default values for those that are
       if self.imu_msg is None:
         self.imu_msg = [0.] * 5
+      if self.imu_stat is None:
+        self.imu_stat = [0] * 4
     else:
       self.imu_msg = [0.] * 5
+      self.imu_stat = [0] * 4
 
   def _get_types(self):
     """
@@ -50,6 +53,7 @@ class IMU_msg(genpy.Message):
     """
     try:
       buff.write(_get_struct_5d().pack(*self.imu_msg))
+      buff.write(_get_struct_4b().pack(*self.imu_stat))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -63,6 +67,9 @@ class IMU_msg(genpy.Message):
       start = end
       end += 40
       self.imu_msg = _get_struct_5d().unpack(str[start:end])
+      start = end
+      end += 4
+      self.imu_stat = _get_struct_4b().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -76,6 +83,7 @@ class IMU_msg(genpy.Message):
     """
     try:
       buff.write(self.imu_msg.tostring())
+      buff.write(self.imu_stat.tostring())
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -90,6 +98,9 @@ class IMU_msg(genpy.Message):
       start = end
       end += 40
       self.imu_msg = numpy.frombuffer(str[start:end], dtype=numpy.float64, count=5)
+      start = end
+      end += 4
+      self.imu_stat = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=4)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -98,6 +109,12 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
+_struct_4b = None
+def _get_struct_4b():
+    global _struct_4b
+    if _struct_4b is None:
+        _struct_4b = struct.Struct("<4b")
+    return _struct_4b
 _struct_5d = None
 def _get_struct_5d():
     global _struct_5d

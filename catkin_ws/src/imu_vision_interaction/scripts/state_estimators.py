@@ -36,17 +36,21 @@ def imu_state_est(imu_state_hist):
     return imu_state_hist
 
 
-def current_state_est(im_screw_hist, imu_state_hist, state_est):
-    imu_state_hist = imu_state_est(imu_state_hist)
-    imu_count = np.bincount(np.array(imu_state_hist, dtype=np.int))
-    #print(f"Count:{count}")
-    state_est._imu = np.vstack((state_est._imu, [imu_count[2], imu_count[0]]))
-    state_est._im = np.vstack((state_est._im, im_state_est(im_screw_hist)))
+def current_state_est(im_screw_hist, imu_state_hist, state_est, im_stat, imu_stat):
+    if all((i == 1) for i in imu_stat):
+        imu_state_hist = imu_state_est(imu_state_hist)
+        imu_count = np.bincount(np.array(imu_state_hist, dtype=np.int))
+        # print(f"Count:{count}")
+        state_est._imu = [imu_count[2], imu_count[0]]
 
-    final_est = [None, None]
-    final_est[0] = round(np.mean([state_est._imu[-1, 0], state_est._im[-1, 0]]))  # screws
-    final_est[1] = round(np.mean([state_est._imu[-1, 1], state_est._im[-1, 1]]))  # bolts
-    state_est._final = np.vstack((state_est._final, final_est))
-    print(f"IMU:{state_est._imu[-1, :]} IM:{state_est._im[-1, :]} Final:{state_est._final[-1, :]}")
+    if im_stat == 1:
+        state_est._im = im_state_est(im_screw_hist)
+
+    if (im_stat == 1) & all((i == 1) for i in imu_stat):
+        final_est = [None, None]
+        final_est[0] = round(np.mean([state_est._imu[0], state_est._im[0]]))  # screws
+        final_est[1] = round(np.mean([state_est._imu[1], state_est._im[1]]))  # bolts
+        state_est._final = final_est
+    print(f"IMU:{state_est._imu} IM:{state_est._im} Final:{state_est._final}")
 
     return state_est, imu_state_hist

@@ -423,6 +423,7 @@ imu_vision_interaction/clean: imu_vision_interaction/CMakeFiles/_imu_vision_inte
 imu_vision_interaction/clean: imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/clean
 imu_vision_interaction/clean: imu_vision_interaction/CMakeFiles/roscpp_generate_messages_py.dir/clean
 imu_vision_interaction/clean: imu_vision_interaction/CMakeFiles/roscpp_generate_messages_eus.dir/clean
+imu_vision_interaction/clean: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/clean
 imu_vision_interaction/clean: imu_vision_interaction/CMakeFiles/roscpp_generate_messages_lisp.dir/clean
 imu_vision_interaction/clean: imu_vision_interaction/CMakeFiles/imu_vision_interaction_genlisp.dir/clean
 imu_vision_interaction/clean: imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/clean
@@ -461,7 +462,7 @@ imu_vision_interaction/CMakeFiles/imu_vision_interaction_genpy.dir/all: imu_visi
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_genpy.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_genpy.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_genpy.dir/rule
@@ -493,7 +494,7 @@ imu_vision_interaction/CMakeFiles/imu_vision_interaction_gennodejs.dir/all: imu_
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_gennodejs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_gennodejs.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_gennodejs.dir/rule
@@ -519,15 +520,16 @@ clean: imu_vision_interaction/CMakeFiles/imu_vision_interaction_gennodejs.dir/cl
 # All Build rule for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_kinect_msg.dir/all
+imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/all: imu_vision_interaction/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/depend
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=17,18 "Built target imu_vision_interaction_generate_messages_lisp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=19,20,21 "Built target imu_vision_interaction_generate_messages_lisp"
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/rule
@@ -559,7 +561,7 @@ imu_vision_interaction/CMakeFiles/imu_vision_interaction_geneus.dir/all: imu_vis
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_geneus.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_geneus.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_geneus.dir/rule
@@ -585,15 +587,16 @@ clean: imu_vision_interaction/CMakeFiles/imu_vision_interaction_geneus.dir/clean
 # All Build rule for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_kinect_msg.dir/all
+imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/all: imu_vision_interaction/CMakeFiles/std_msgs_generate_messages_eus.dir/all
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/depend
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=14,15,16 "Built target imu_vision_interaction_generate_messages_eus"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=15,16,17,18 "Built target imu_vision_interaction_generate_messages_eus"
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/all
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_eus.dir/rule
@@ -683,15 +686,16 @@ clean: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messag
 # All Build rule for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_kinect_msg.dir/all
+imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/all: imu_vision_interaction/CMakeFiles/std_msgs_generate_messages_nodejs.dir/all
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/depend
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=19,20 "Built target imu_vision_interaction_generate_messages_nodejs"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=22,23,24 "Built target imu_vision_interaction_generate_messages_nodejs"
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/all
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_nodejs.dir/rule
@@ -776,6 +780,38 @@ clean: imu_vision_interaction/CMakeFiles/roscpp_generate_messages_eus.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir
+
+# All Build rule for target.
+imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/all:
+	$(MAKE) -f imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/build.make imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/depend
+	$(MAKE) -f imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/build.make imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num= "Built target _imu_vision_interaction_generate_messages_check_deps_gui_msg"
+.PHONY : imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/all
+
+# Build rule for subdir invocation for target.
+imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
+.PHONY : imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/rule
+
+# Convenience name for target.
+_imu_vision_interaction_generate_messages_check_deps_gui_msg: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/rule
+
+.PHONY : _imu_vision_interaction_generate_messages_check_deps_gui_msg
+
+# clean rule for target.
+imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/clean:
+	$(MAKE) -f imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/build.make imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/clean
+.PHONY : imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/clean
+
+# clean rule for target.
+clean: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target imu_vision_interaction/CMakeFiles/roscpp_generate_messages_lisp.dir
 
 # All Build rule for target.
@@ -819,7 +855,7 @@ imu_vision_interaction/CMakeFiles/imu_vision_interaction_genlisp.dir/all: imu_vi
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_genlisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_genlisp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_genlisp.dir/rule
@@ -845,15 +881,16 @@ clean: imu_vision_interaction/CMakeFiles/imu_vision_interaction_genlisp.dir/clea
 # All Build rule for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_kinect_msg.dir/all
+imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/all: imu_vision_interaction/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/depend
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=12,13 "Built target imu_vision_interaction_generate_messages_cpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=12,13,14 "Built target imu_vision_interaction_generate_messages_cpp"
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_cpp.dir/rule
@@ -1173,7 +1210,7 @@ imu_vision_interaction/CMakeFiles/imu_vision_interaction_gencpp.dir/all: imu_vis
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_gencpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_gencpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_gencpp.dir/rule
@@ -1231,15 +1268,16 @@ clean: imu_vision_interaction/CMakeFiles/std_msgs_generate_messages_nodejs.dir/c
 # All Build rule for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_IMU_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_kinect_msg.dir/all
+imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/all: imu_vision_interaction/CMakeFiles/_imu_vision_interaction_generate_messages_check_deps_gui_msg.dir/all
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/all: imu_vision_interaction/CMakeFiles/std_msgs_generate_messages_py.dir/all
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/depend
 	$(MAKE) -f imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/build.make imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=21,22,23 "Built target imu_vision_interaction_generate_messages_py"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=25,26,27,28 "Built target imu_vision_interaction_generate_messages_py"
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_py.dir/rule
@@ -1312,7 +1350,7 @@ all: imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages.
 
 # Build rule for subdir invocation for target.
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 17
 	$(MAKE) -f CMakeFiles/Makefile2 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles 0
 .PHONY : imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages.dir/rule

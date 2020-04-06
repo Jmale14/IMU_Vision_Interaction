@@ -10,13 +10,15 @@ from matplotlib.figure import Figure
 import numpy as np
 import time
 from PIL import Image, ImageTk
+import rospy
+from imu_vision_interaction.msg import gui_msg
 
 
-class StateEst:
-    def __init__(self):
-        self._final = np.array([[6, 6], [6, 6], [6, 6]])
-        self._im = np.array([[5, 5], [5, 5], [5, 5]])
-        self._imu = np.array([[7, 7], [7, 7], [7, 7]])
+# class StateEst:
+#     def __init__(self):
+#         self._final = np.array([[6, 6], [6, 6], [6, 6]])
+#         self._im = np.array([[5, 5], [5, 5], [5, 5]])
+#         self._imu = np.array([[7, 7], [7, 7], [7, 7]])
 
 
 CATEGORIES = ['AllenKeyIn', 'AllenKeyOut', 'ScrewingIn', 'ScrewingOut', 'Null']
@@ -24,7 +26,7 @@ pos = np.arange(len(CATEGORIES))
 imu_state_hist = np.array([4, 4, 4], dtype=np.int)
 im_screw_hist = np.zeros((1, 3), dtype=np.int)
 imu_pred = np.zeros(5)
-state_est = StateEst()
+#state_est = StateEst()
 
 plt.ion()
 
@@ -34,15 +36,20 @@ k = 0
 QUIT = False
 
 
-class GUI():
+class GUI:
     def __init__(self):
         self._no_completed = 0
         self._state = 0
         self._msg_timer = time.time()
         self._prt_done = False
-        self._state_est = None
+        #self._state_est = None
         self._timer_flag = False
         self._sys_stat = 2
+        self._state_est_final = np.zeros((1, 2))
+        self._state_est_im = np.zeros((1, 2))
+        self._state_est_imu = np.zeros((1, 2))
+        self._imu_stat = [2, 2, 2, 2]
+        self._im_stat = 2
 
         self.root = Tk.Tk()
         self.root.wm_title("IMU and Vision Interaction System")
@@ -94,6 +101,7 @@ class GUI():
         global QUIT
         QUIT = True
         self._state = 11
+        rospy.signal_shutdown('Quit Button')
         self.root.quit()     # stops mainloop
         self.root.destroy()  # this is necessary on Windows to prevent
                         # Fatal Python Error: PyEval_RestoreThread: NULL tstate
@@ -126,15 +134,15 @@ class GUI():
         state_msgs = [f'Starting',  # 0
                       f'Initialising Sensors',  # 1
                       f'Ready to begin part {self._no_completed+1}',  # 2
-                      f'Part {self._no_completed+1} still requires {self._state_est._final[-1, 0]} screws and {self._state_est._final[-1, 1]} bolts',  # 3
-                      f'Part {self._no_completed+1} still requires {self._state_est._final[-1, 0]} screws',  # 4
-                      f'Part {self._no_completed+1} still requires {self._state_est._final[-1, 1]} bolts',  # 5
+                      f'Part {self._no_completed+1} still requires {self._state_est_final[-1, 0]} screws and {self._state_est_final[-1, 1]} bolts',  # 3
+                      f'Part {self._no_completed+1} still requires {self._state_est_final[-1, 0]} screws',  # 4
+                      f'Part {self._no_completed+1} still requires {self._state_est_final[-1, 1]} bolts',  # 5
                       f'This part seems done, press next part or quit button',  # 6
-                      f'Part still missing {self._state_est._final[-1, 0]} screws and {self._state_est._final[-1, 1]} bolts \n'
+                      f'Part still missing {self._state_est_final[-1, 0]} screws and {self._state_est_final[-1, 1]} bolts \n'
                       f'Press Next Part button again if you''re sure',  # 7
-                      f'Part still missing {self._state_est._final[-1, 0]} screws \n'
+                      f'Part still missing {self._state_est_final[-1, 0]} screws \n'
                       f'Press Next Part button again if you''re sure',  # 8
-                      f'Part still missing {self._state_est._final[-1, 1]} bolts \n'
+                      f'Part still missing {self._state_est_final[-1, 1]} bolts \n'
                       f'Press Next Part button again if you''re sure',  # 9
                       f'Sensor error, see status dialogue',  # 10
                       f'Quitting ',  # 11
@@ -153,13 +161,13 @@ class GUI():
 
             if 3 <= self._state <= 6:
 
-                if (self._state_est._final[-1, 1] == 0) & (self._state_est._final[-1, 0] == 0):
+                if (self._state_est_final[-1, 1] == 0) & (self._state_est_final[-1, 0] == 0):
                     self._state = 6
 
-                if self._state_est._final[-1, 1] == 0:
+                if self._state_est_final[-1, 1] == 0:
                     self._state = 4
 
-                if self._state_est._final[-1, 0] == 0:
+                if self._state_est_final[-1, 0] == 0:
                     self._state = 5
 
 
@@ -170,16 +178,16 @@ class GUI():
         self.message_obj.insert(Tk.INSERT, state_msgs[self._state])
         pass
 
-    def update_status(self, imu_stat, kin_stat):
-        IMU_MSGS = ['ERROR', 'Ready', 'Unknown', 'Shutdown', 'Connecting', 'Initialising']
+    def update_status(self):
+        IMU_MSGS = ['ERROR', 'Ready', 'Unknown', 'Shutdown', 'Starting', 'Connecting', 'Initialising']
         KINECT_MSGS = ['ERROR', 'Ready', 'Unknown', 'Initialising']
         SYSTEM_MSGS = ['ERROR', 'Ready', 'Setting Up']
         IMU_SYS_MSGS = ['ERROR', 'Ready', 'Setting Up']
 
-        if any((i == 0) for i in imu_stat) | any((j == 0) for j in kin_stat):
+        if any((i == 0) for i in self._imu_stat) | (self._im_stat == 0):
             self._sys_stat = 0
             self._state = 10
-        elif all((i == 1) for i in imu_stat) & all((i == 1) for i in kin_stat):
+        elif all((i == 1) for i in self._imu_stat) & (self._im_stat == 1):
             if self._sys_stat != 1:
                 self._sys_stat = 1
                 self._state = 2
@@ -187,12 +195,12 @@ class GUI():
 
         status_text = f"System Status: {SYSTEM_MSGS[self._sys_stat]} \n " \
                       f" \n " \
-                      f"Vision System: {KINECT_MSGS[kin_stat[0]]} \n " \
+                      f"Vision System: {KINECT_MSGS[self._im_stat]} \n " \
                       f" \n " \
-                      f"IMU System: {IMU_SYS_MSGS[imu_stat[3]]} \n " \
-                      f"  1: {IMU_MSGS[imu_stat[0]]} \n " \
-                      f"  2: {IMU_MSGS[imu_stat[1]]} \n " \
-                      f"  3: {IMU_MSGS[imu_stat[2]]} \n "
+                      f"IMU System: {IMU_SYS_MSGS[self._imu_stat[3]]} \n " \
+                      f"  1: {IMU_MSGS[self._imu_stat[0]]} \n " \
+                      f"  2: {IMU_MSGS[self._imu_stat[1]]} \n " \
+                      f"  3: {IMU_MSGS[self._imu_stat[2]]} \n "
         self.status_obj.delete("1.0", Tk.END)
         self.status_obj.insert(Tk.INSERT, status_text)
         pass
@@ -207,9 +215,9 @@ class GUI():
         for i in range(0, 2):
             ax = axs[0, i]
             ax.cla()
-            ax.plot(self._state_est._im[:, i] * k)
-            ax.plot(self._state_est._imu[:, i])
-            ax.plot(self._state_est._final[:, i])
+            ax.plot(self._state_est_im[:, i])
+            ax.plot(self._state_est_imu[:, i])
+            ax.plot(self._state_est_final[:, i])
             ax.set_ylabel('Estimated Number')
             ax.set_title(Titles[i])
             ax.legend(legend)
@@ -235,11 +243,10 @@ class GUI():
 
         plt.pause(0.0001)
 
-    def update_gui(self, imu_stat, kin_stat, state_est):
-        self._state_est = state_est
+    def update_gui(self):
         self.update_plot()
         self.update_counter()
-        self.update_status(imu_stat, kin_stat)
+        self.update_status()
         self.update_message()
         self.canvas.draw()
         self.root.update_idletasks()
@@ -247,14 +254,31 @@ class GUI():
 
         return self._no_completed
 
+    def update_data(self, data):
+        self._state_est_final = np.vstack((self._state_est_final, [4 - data.state_est_final[0], 1 - data.state_est_final[1]]))
+        self._state_est_im = np.vstack((self._state_est_im, [4 - data.state_est_im[0], 1 - data.state_est_im[1]]))
+        self._state_est_imu = np.vstack((self._state_est_imu, [4 - data.state_est_imu[0], 1 - data.state_est_imu[1]]))
+        self._im_stat = data.imu_stat
+        self._im_stat = data.kin_stat
 
-gui = GUI()
-completed = 0
-while not QUIT:
-    time.sleep(0.5)
-    imu_stat = [1, 0, 1, 1]
-    kin_stat = [1]
-    completed = gui.update_gui(imu_stat, kin_stat, state_est)
+
+def listener():
+    gui = GUI()
+    rospy.init_node('gui_listener', anonymous=True)
+    rospy.Subscriber('gui_Data', gui_msg, gui.update_data)
+    #rospy.spin()
+    while not rospy.is_shutdown():
+        gui.update_gui()
+
+
+if __name__ == '__main__':
+    #completed = 0
+    listener()
+# while not QUIT:
+#     time.sleep(0.5)
+#     imu_stat = [1, 0, 1, 1]
+#     kin_stat = [1]
+#     completed = gui.update_gui(imu_stat, kin_stat, state_est)
     #gui._state = gui._state + 1
 
 # def on_key_press(event, canvas, toolbar):

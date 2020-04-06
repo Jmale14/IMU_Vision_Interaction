@@ -24,6 +24,7 @@ class kinect_msg {
       this.im_screw_probs_4 = null;
       this.tally = null;
       this.safe_move = null;
+      this.im_stat = null;
     }
     else {
       if (initObj.hasOwnProperty('im_screw_probs_1')) {
@@ -62,6 +63,12 @@ class kinect_msg {
       else {
         this.safe_move = false;
       }
+      if (initObj.hasOwnProperty('im_stat')) {
+        this.im_stat = initObj.im_stat
+      }
+      else {
+        this.im_stat = 0;
+      }
     }
   }
 
@@ -99,6 +106,8 @@ class kinect_msg {
     bufferOffset = _arraySerializer.float64(obj.tally, buffer, bufferOffset, 5);
     // Serialize message field [safe_move]
     bufferOffset = _serializer.bool(obj.safe_move, buffer, bufferOffset);
+    // Serialize message field [im_stat]
+    bufferOffset = _serializer.int8(obj.im_stat, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -118,11 +127,13 @@ class kinect_msg {
     data.tally = _arrayDeserializer.float64(buffer, bufferOffset, 5)
     // Deserialize message field [safe_move]
     data.safe_move = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [im_stat]
+    data.im_stat = _deserializer.int8(buffer, bufferOffset);
     return data;
   }
 
   static getMessageSize(object) {
-    return 201;
+    return 202;
   }
 
   static datatype() {
@@ -132,7 +143,7 @@ class kinect_msg {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '7d063af4b46c588d600951ce9d186617';
+    return '662361b7d3d4f58e85a3c72705f8eef3';
   }
 
   static messageDefinition() {
@@ -144,6 +155,7 @@ class kinect_msg {
     float64[5] im_screw_probs_4
     float64[5] tally
     bool safe_move
+    int8 im_stat
     `;
   }
 
@@ -193,6 +205,13 @@ class kinect_msg {
     }
     else {
       resolved.safe_move = false
+    }
+
+    if (msg.im_stat !== undefined) {
+      resolved.im_stat = msg.im_stat;
+    }
+    else {
+      resolved.im_stat = 0
     }
 
     return resolved;

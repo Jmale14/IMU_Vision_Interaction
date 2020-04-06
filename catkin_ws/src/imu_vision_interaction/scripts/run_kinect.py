@@ -28,23 +28,25 @@ def kinect_run():
     rospy.init_node('Kinect_Main', anonymous=True)
     rate = rospy.Rate(10)
     msg = kinect_msg()
+    status = 3
     try:
         im_screw_detect = ImScrewDetector()
     except Exception:
         print("**Screw Detect Error**")
+        status = 0
         traceback.print_exc(file=sys.stdout)
-
 
     while not rospy.is_shutdown():
         try:
             image = np.array(frame_convert2.video_cv(freenect.sync_get_video()[0]))
+            status = 1
         except TypeError as e:
             time.sleep(1)
         except Exception as e:
             print("**Get Image Error**")
+            status = 0
             traceback.print_exc(file=sys.stdout)
             break
-
 
         im_screw_states, tally = im_screw_detect.detect_screws(image, args.disp)
         im_screw_states = im_screw_states.tolist()
@@ -55,11 +57,11 @@ def kinect_run():
         msg.im_screw_probs_3 = im_screw_states[2]
         msg.im_screw_probs_4 = im_screw_states[3]
         msg.tally = tally
+        msg.im_stat = status
 
         msg.safe_move = False
         pub.publish(msg)
         rate.sleep()
-
 
 
 ## Argument parsing
