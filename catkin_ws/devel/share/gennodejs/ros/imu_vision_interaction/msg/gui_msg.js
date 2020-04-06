@@ -65,27 +65,27 @@ class gui_msg {
       throw new Error('Unable to serialize array field imu_stat - length must be 4')
     }
     // Serialize message field [imu_stat]
-    bufferOffset = _arraySerializer.int8(obj.imu_stat, buffer, bufferOffset, 4);
+    bufferOffset = _arraySerializer.int16(obj.imu_stat, buffer, bufferOffset, 4);
     // Serialize message field [kin_stat]
-    bufferOffset = _serializer.int8(obj.kin_stat, buffer, bufferOffset);
+    bufferOffset = _serializer.int16(obj.kin_stat, buffer, bufferOffset);
     // Check that the constant length array field [state_est_final] has the right length
     if (obj.state_est_final.length !== 2) {
       throw new Error('Unable to serialize array field state_est_final - length must be 2')
     }
     // Serialize message field [state_est_final]
-    bufferOffset = _arraySerializer.int8(obj.state_est_final, buffer, bufferOffset, 2);
+    bufferOffset = _arraySerializer.int16(obj.state_est_final, buffer, bufferOffset, 2);
     // Check that the constant length array field [state_est_im] has the right length
     if (obj.state_est_im.length !== 2) {
       throw new Error('Unable to serialize array field state_est_im - length must be 2')
     }
     // Serialize message field [state_est_im]
-    bufferOffset = _arraySerializer.int8(obj.state_est_im, buffer, bufferOffset, 2);
+    bufferOffset = _arraySerializer.int16(obj.state_est_im, buffer, bufferOffset, 2);
     // Check that the constant length array field [state_est_imu] has the right length
     if (obj.state_est_imu.length !== 2) {
       throw new Error('Unable to serialize array field state_est_imu - length must be 2')
     }
     // Serialize message field [state_est_imu]
-    bufferOffset = _arraySerializer.int8(obj.state_est_imu, buffer, bufferOffset, 2);
+    bufferOffset = _arraySerializer.int16(obj.state_est_imu, buffer, bufferOffset, 2);
     return bufferOffset;
   }
 
@@ -94,20 +94,20 @@ class gui_msg {
     let len;
     let data = new gui_msg(null);
     // Deserialize message field [imu_stat]
-    data.imu_stat = _arrayDeserializer.int8(buffer, bufferOffset, 4)
+    data.imu_stat = _arrayDeserializer.int16(buffer, bufferOffset, 4)
     // Deserialize message field [kin_stat]
-    data.kin_stat = _deserializer.int8(buffer, bufferOffset);
+    data.kin_stat = _deserializer.int16(buffer, bufferOffset);
     // Deserialize message field [state_est_final]
-    data.state_est_final = _arrayDeserializer.int8(buffer, bufferOffset, 2)
+    data.state_est_final = _arrayDeserializer.int16(buffer, bufferOffset, 2)
     // Deserialize message field [state_est_im]
-    data.state_est_im = _arrayDeserializer.int8(buffer, bufferOffset, 2)
+    data.state_est_im = _arrayDeserializer.int16(buffer, bufferOffset, 2)
     // Deserialize message field [state_est_imu]
-    data.state_est_imu = _arrayDeserializer.int8(buffer, bufferOffset, 2)
+    data.state_est_imu = _arrayDeserializer.int16(buffer, bufferOffset, 2)
     return data;
   }
 
   static getMessageSize(object) {
-    return 11;
+    return 22;
   }
 
   static datatype() {
@@ -117,17 +117,17 @@ class gui_msg {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '7c713c9d3766fe63480029252cf95af8';
+    return '34f592a2b757ac695ceb8d8637e5e187';
   }
 
   static messageDefinition() {
     // Returns full string definition for message
     return `
-    int8[4] imu_stat
-    int8 kin_stat
-    int8[2] state_est_final
-    int8[2] state_est_im
-    int8[2] state_est_imu
+    int16[4] imu_stat
+    int16 kin_stat
+    int16[2] state_est_final
+    int16[2] state_est_im
+    int16[2] state_est_imu
     `;
   }
 

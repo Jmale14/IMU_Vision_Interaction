@@ -10,14 +10,8 @@ from state_estimators import current_state_est
 import argparse
 import matplotlib.pyplot as plt
 
-imu_pred = np.zeros(5)
-im_screw_hist = np.zeros((1, 3), dtype=np.int)
-timer = time.time()
-imu_state_hist = np.array([4, 4, 4], dtype=np.int)
 CATEGORIES = ['AllenKeyIn', 'AllenKeyOut', 'ScrewingIn', 'ScrewingOut', 'Null']
 pos = np.arange(len(CATEGORIES))
-im_stat = 2
-imu_stat = [2, 2, 2, 2]
 
 # parser = argparse.ArgumentParser(
 #         description='Fusion of screw/bolt state estimation from IMU and vision sources')
@@ -34,11 +28,7 @@ imu_stat = [2, 2, 2, 2]
 #     fig, axs = plt.subplots(2, 2)
 #
 #
-# class StateEst:
-#     def __init__(self):
-#         self._final = [None, None]
-#         self._im = [None, None]
-#         self._imu = [None, None]
+
 #
 #
 # def plot_estimation():
@@ -83,38 +73,43 @@ imu_stat = [2, 2, 2, 2]
 # state_est = StateEst()
 
 
-class fusion_listener:
+class FusionListener:
     def __init__(self):
-        self.pub = rospy.Publisher('gui_Data', gui_msg, queue_size=1)
-        self.imu_sub = rospy.Subscriber('IMU_Data', IMU_msg, imu_callback)
-        self.im_sub = rospy.Subscriber('Image_Screws', kinect_msg, imscrews_callback)
+        self._imu_pred = np.zeros(5)
+        self._im_screw_hist = np.zeros((1, 3), dtype=np.int)
+        self._timer = time.time()
+        self._imu_state_hist = np.array([4, 4, 4], dtype=np.int)
+        self._im_stat = 2
+        self._imu_stat = [2, 2, 2, 2]
+        self._state_est = self.StateEst()
 
-    def imu_callback(data):
-        global imu_state_hist
-        global im_screw_hist
-        global state_est
-        global imu_pred
-        global imu_stat
-        global im_stat
-        imu_stat = data.imu_stat
-        imu_pred = data.imu_msg
-        imu_state_hist = np.hstack((imu_state_hist, np.argmax(imu_pred)))
+        self.pub = rospy.Publisher('gui_Data', gui_msg, queue_size=1)
+        self.imu_sub = rospy.Subscriber('IMU_Data', IMU_msg, self.imu_callback)
+        self.im_sub = rospy.Subscriber('Image_Screws', kinect_msg, self.imscrews_callback)
+
+    class StateEst:
+        def __init__(self):
+            self._final = np.zeros(2, dtype=np.int)
+            self._im = np.zeros(2, dtype=np.int)
+            self._imu = np.zeros(2, dtype=np.int)
+
+    def imu_callback(self, data):
+        self._imu_stat = data.imu_stat
+        self._imu_pred = data.imu_msg
+        self._imu_state_hist = np.hstack((self._imu_state_hist, np.argmax(self._imu_pred)))
         #rospy.loginfo(rospy.get_caller_id() + ' - I heard %s', data.data)
 
         cutoff_t = time.time() - 5
-        im_screw_hist = np.delete(im_screw_hist, np.where(im_screw_hist[:, 0] < cutoff_t)[0], axis=0)
+        self._im_screw_hist = np.delete(self._im_screw_hist, np.where(self._im_screw_hist[:, 0] < cutoff_t)[0], axis=0)
+        self.fusion()
 
-        state_est, imu_state_hist = current_state_est(im_screw_hist, imu_state_hist, state_est)
+        # if args.disp:
+        #     plot_estimation()
 
-        if args.disp:
-            plot_estimation()
-
-
-    def imscrews_callback(data):
-        global im_screw_hist
-        global im_stat
-        imstat = data.im_stat
-        im_screw_hist = np.vstack((im_screw_hist, [time.time(), data.tally[0], data.tally[2]]))
+    def imscrews_callback(self, data):
+        self._im_stat = data.im_stat
+        self._im_screw_hist = np.vstack((self._im_screw_hist, [time.time(), data.tally[0], data.tally[2]]))
+        self.fusion()
         # rospy.loginfo(f"{rospy.get_caller_id()}:"
         #               f"    Safe Move: {data.safe_move} \n"
         #               f"    Image Screw Predictions: {data.im_screw_probs_1} \n"
@@ -123,20 +118,32 @@ class fusion_listener:
         #               f"                             {data.im_screw_probs_4} \n"
         #               f"    Predictions Tally: {data.tally}")
 
+    def pub_message(self):
+        rate = rospy.Rate(10)
+        msg = gui_msg()
+        msg.imu_stat = self._imu_stat
+        msg.kin_stat = self._im_stat
+        msg.state_est_final = self._state_est._final
+        msg.state_est_im = self._state_est._im
+        msg.state_est_imu = self._state_est._imu
+        self.pub.publish(msg)
+        if time.time() - self._timer > 1:
+            print('published')
+            self._timer = time.time()
+        rate.sleep()
+
+    def fusion(self):
+        self._state_est, self._imu_state_hist = \
+            current_state_est(self._im_screw_hist, self._imu_state_hist, self._state_est, self._im_stat, self._imu_stat)
+        self.pub_message()
+
+
 
 def main():
-
     rospy.init_node('fusion_listener', anonymous=True)
+    fusion_inst = FusionListener()
+    rospy.spin()
 
-
-    msg = gui_msg
-    while not rospy.is_shutdown():
-        msg.imu_stat = imu_stat
-        msg.kin_stat = im_stat
-        msg.state_est_final = state_est._final
-        msg.state_est_im = state_est._im
-        msg.state_est_imu = state_est._imu
-        pub.publish()
 
 if __name__ == '__main__':
     print("Starting Fusion Node")

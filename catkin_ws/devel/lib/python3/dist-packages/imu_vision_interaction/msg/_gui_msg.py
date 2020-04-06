@@ -7,16 +7,16 @@ import struct
 
 
 class gui_msg(genpy.Message):
-  _md5sum = "7c713c9d3766fe63480029252cf95af8"
+  _md5sum = "34f592a2b757ac695ceb8d8637e5e187"
   _type = "imu_vision_interaction/gui_msg"
   _has_header = False #flag to mark the presence of a Header object
-  _full_text = """int8[4] imu_stat
-int8 kin_stat
-int8[2] state_est_final
-int8[2] state_est_im
-int8[2] state_est_imu"""
+  _full_text = """int16[4] imu_stat
+int16 kin_stat
+int16[2] state_est_final
+int16[2] state_est_im
+int16[2] state_est_imu"""
   __slots__ = ['imu_stat','kin_stat','state_est_final','state_est_im','state_est_imu']
-  _slot_types = ['int8[4]','int8','int8[2]','int8[2]','int8[2]']
+  _slot_types = ['int16[4]','int16','int16[2]','int16[2]','int16[2]']
 
   def __init__(self, *args, **kwds):
     """
@@ -64,11 +64,11 @@ int8[2] state_est_imu"""
     :param buff: buffer, ``StringIO``
     """
     try:
-      buff.write(_get_struct_4b().pack(*self.imu_stat))
-      buff.write(_get_struct_b().pack(self.kin_stat))
-      buff.write(_get_struct_2b().pack(*self.state_est_final))
-      buff.write(_get_struct_2b().pack(*self.state_est_im))
-      buff.write(_get_struct_2b().pack(*self.state_est_imu))
+      buff.write(_get_struct_4h().pack(*self.imu_stat))
+      buff.write(_get_struct_h().pack(self.kin_stat))
+      buff.write(_get_struct_2h().pack(*self.state_est_final))
+      buff.write(_get_struct_2h().pack(*self.state_est_im))
+      buff.write(_get_struct_2h().pack(*self.state_est_imu))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -80,20 +80,20 @@ int8[2] state_est_imu"""
     try:
       end = 0
       start = end
+      end += 8
+      self.imu_stat = _get_struct_4h().unpack(str[start:end])
+      start = end
+      end += 2
+      (self.kin_stat,) = _get_struct_h().unpack(str[start:end])
+      start = end
       end += 4
-      self.imu_stat = _get_struct_4b().unpack(str[start:end])
+      self.state_est_final = _get_struct_2h().unpack(str[start:end])
       start = end
-      end += 1
-      (self.kin_stat,) = _get_struct_b().unpack(str[start:end])
+      end += 4
+      self.state_est_im = _get_struct_2h().unpack(str[start:end])
       start = end
-      end += 2
-      self.state_est_final = _get_struct_2b().unpack(str[start:end])
-      start = end
-      end += 2
-      self.state_est_im = _get_struct_2b().unpack(str[start:end])
-      start = end
-      end += 2
-      self.state_est_imu = _get_struct_2b().unpack(str[start:end])
+      end += 4
+      self.state_est_imu = _get_struct_2h().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -107,7 +107,7 @@ int8[2] state_est_imu"""
     """
     try:
       buff.write(self.imu_stat.tostring())
-      buff.write(_get_struct_b().pack(self.kin_stat))
+      buff.write(_get_struct_h().pack(self.kin_stat))
       buff.write(self.state_est_final.tostring())
       buff.write(self.state_est_im.tostring())
       buff.write(self.state_est_imu.tostring())
@@ -123,20 +123,20 @@ int8[2] state_est_imu"""
     try:
       end = 0
       start = end
+      end += 8
+      self.imu_stat = numpy.frombuffer(str[start:end], dtype=numpy.int16, count=4)
+      start = end
+      end += 2
+      (self.kin_stat,) = _get_struct_h().unpack(str[start:end])
+      start = end
       end += 4
-      self.imu_stat = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=4)
+      self.state_est_final = numpy.frombuffer(str[start:end], dtype=numpy.int16, count=2)
       start = end
-      end += 1
-      (self.kin_stat,) = _get_struct_b().unpack(str[start:end])
+      end += 4
+      self.state_est_im = numpy.frombuffer(str[start:end], dtype=numpy.int16, count=2)
       start = end
-      end += 2
-      self.state_est_final = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=2)
-      start = end
-      end += 2
-      self.state_est_im = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=2)
-      start = end
-      end += 2
-      self.state_est_imu = numpy.frombuffer(str[start:end], dtype=numpy.int8, count=2)
+      end += 4
+      self.state_est_imu = numpy.frombuffer(str[start:end], dtype=numpy.int16, count=2)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -145,21 +145,21 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_2b = None
-def _get_struct_2b():
-    global _struct_2b
-    if _struct_2b is None:
-        _struct_2b = struct.Struct("<2b")
-    return _struct_2b
-_struct_b = None
-def _get_struct_b():
-    global _struct_b
-    if _struct_b is None:
-        _struct_b = struct.Struct("<b")
-    return _struct_b
-_struct_4b = None
-def _get_struct_4b():
-    global _struct_4b
-    if _struct_4b is None:
-        _struct_4b = struct.Struct("<4b")
-    return _struct_4b
+_struct_4h = None
+def _get_struct_4h():
+    global _struct_4h
+    if _struct_4h is None:
+        _struct_4h = struct.Struct("<4h")
+    return _struct_4h
+_struct_2h = None
+def _get_struct_2h():
+    global _struct_2h
+    if _struct_2h is None:
+        _struct_2h = struct.Struct("<2h")
+    return _struct_2h
+_struct_h = None
+def _get_struct_h():
+    global _struct_h
+    if _struct_h is None:
+        _struct_h = struct.Struct("<h")
+    return _struct_h

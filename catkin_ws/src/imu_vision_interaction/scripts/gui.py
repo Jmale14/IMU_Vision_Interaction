@@ -36,7 +36,7 @@ k = 0
 QUIT = False
 
 
-class GUI():
+class GUI:
     def __init__(self):
         self._no_completed = 0
         self._state = 0
@@ -107,7 +107,6 @@ class GUI():
                         # Fatal Python Error: PyEval_RestoreThread: NULL tstate
 
     def _next_part(self):
-        print('next part')
         if 2 <= self._state <= 5:
             self._state = 7
             if self._state_est._final[-1, 1] == 0:
@@ -256,9 +255,9 @@ class GUI():
         return self._no_completed
 
     def update_data(self, data):
-        self.state_est_final = [4 - data.state_est_final[0], 1 - data.state_est_final[1]]
-        self.state_est_im = [4 - data.state_est_im[0], 1 - data.state_est_im[1]]
-        self.state_est_imu = [4 - data.state_est_imu[0], 1 - data.state_est_imu[1]]
+        self._state_est_final = np.vstack((self._state_est_final, [4 - data.state_est_final[0], 1 - data.state_est_final[1]]))
+        self._state_est_im = np.vstack((self._state_est_im, [4 - data.state_est_im[0], 1 - data.state_est_im[1]]))
+        self._state_est_imu = np.vstack((self._state_est_imu, [4 - data.state_est_imu[0], 1 - data.state_est_imu[1]]))
         self._im_stat = data.imu_stat
         self._im_stat = data.kin_stat
 
