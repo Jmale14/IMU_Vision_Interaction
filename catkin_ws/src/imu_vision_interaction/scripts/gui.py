@@ -38,9 +38,11 @@ class GUI():
     def __init__(self):
         self._no_completed = 0
         self._state = 0
-        self._msg_timer = 0
+        self._msg_timer = time.time()
         self._prt_done = False
         self._state_est = None
+        self._timer_flag = False
+        self._sys_stat = 2
 
         self.root = Tk.Tk()
         self.root.wm_title("IMU and Vision Interaction System")
@@ -55,8 +57,8 @@ class GUI():
 
         # canvas.mpl_connect("key_press_event", on_key_press(canvas, toolbar))
 
-        self.message_obj = Tk.Text(master=self.root, width=20, height=1, pady=20)
-        self.message_obj.grid(row=4, column=0, columnspan=2, sticky=Tk.W + Tk.E)
+        self.message_obj = Tk.Text(master=self.root, width=50, height=2, pady=20)
+        self.message_obj.grid(row=4, column=0, columnspan=2)
 
         load = Image.open("logo.jpg")
         resized = load.resize((100, 100), Image.ANTIALIAS)
@@ -97,7 +99,21 @@ class GUI():
                         # Fatal Python Error: PyEval_RestoreThread: NULL tstate
 
     def _next_part(self):
-        self._no_completed = self._no_completed + 1
+        if 2 <= self._state <= 5:
+            self._state = 7
+            if self._state_est._final[-1, 1] == 0:
+                self._state = 8
+
+            if self._state_est._final[-1, 0] == 0:
+                self._state = 9
+            self._timer_flag = True
+            self._msg_timer = time.time()
+
+        elif self._state == 6 | self._timer_flag:
+            self._state = 2
+            self._no_completed = self._no_completed + 1
+            self._timer_flag = False
+            self._msg_timer = time.time()
         pass
 
     def update_counter(self):
@@ -107,25 +123,45 @@ class GUI():
         pass
 
     def update_message(self):
-        state_msgs = ['Starting',  # 0
-                      'Initialising Sensors',  # 1
+        state_msgs = [f'Starting',  # 0
+                      f'Initialising Sensors',  # 1
                       f'Ready to begin part {self._no_completed+1}',  # 2
                       f'Part {self._no_completed+1} still requires {self._state_est._final[-1, 0]} screws and {self._state_est._final[-1, 1]} bolts',  # 3
-                      f'Part {self._no_completed + 1} still requires {self._state_est._final[-1, 0]} screws',  # 4
-                      f'Part {self._no_completed + 1} still requires {self._state_est._final[-1, 1]} bolts',  # 5
+                      f'Part {self._no_completed+1} still requires {self._state_est._final[-1, 0]} screws',  # 4
+                      f'Part {self._no_completed+1} still requires {self._state_est._final[-1, 1]} bolts',  # 5
                       f'This part seems done, press next part or quit button',  # 6
                       f'Part still missing {self._state_est._final[-1, 0]} screws and {self._state_est._final[-1, 1]} bolts \n'
-                      f'Press Next Part button again of you''re sure',  # 7
+                      f'Press Next Part button again if you''re sure',  # 7
                       f'Part still missing {self._state_est._final[-1, 0]} screws \n'
-                      f'Press Next Part button again of you''re sure',  # 8
+                      f'Press Next Part button again if you''re sure',  # 8
                       f'Part still missing {self._state_est._final[-1, 1]} bolts \n'
-                      f'Press Next Part button again of you''re sure',  # 9
+                      f'Press Next Part button again if you''re sure',  # 9
                       f'Sensor error, see status dialogue',  # 10
                       f'Quitting ',  # 11
                       f'Message Error']  # 12
 
-        if self._state == 2 & self._msg_timer > 2:
+        if (self._state == 0) & ((time.time() - self._msg_timer) > 3):
+            self._state = 1
+
+        if (self._state == 2) & ((time.time() - self._msg_timer) > 3):
             self._state = 3
+
+        if 3 <= self._state <= 9:
+            if (7 <= self._state <= 9) & (time.time() - self._msg_timer > 2) & self._timer_flag:
+                self._state = 3
+                self._timer_flag = False
+
+            if 3 <= self._state <= 6:
+
+                if (self._state_est._final[-1, 1] == 0) & (self._state_est._final[-1, 0] == 0):
+                    self._state = 6
+
+                if self._state_est._final[-1, 1] == 0:
+                    self._state = 4
+
+                if self._state_est._final[-1, 0] == 0:
+                    self._state = 5
+
 
 
         self.message_obj.delete("1.0", Tk.END)
@@ -139,16 +175,17 @@ class GUI():
         KINECT_MSGS = ['ERROR', 'Ready', 'Unknown', 'Initialising']
         SYSTEM_MSGS = ['ERROR', 'Ready', 'Setting Up']
         IMU_SYS_MSGS = ['ERROR', 'Ready', 'Setting Up']
-        sys_stat = 2
+
         if any((i == 0) for i in imu_stat) | any((j == 0) for j in kin_stat):
-            sys_stat = 0
+            self._sys_stat = 0
             self._state = 10
         elif all((i == 1) for i in imu_stat) & all((i == 1) for i in kin_stat):
-            sys_stat = 1
-            self._state = 2
-            self._msg_timer = time.time()
+            if self._sys_stat != 1:
+                self._sys_stat = 1
+                self._state = 2
+                self._msg_timer = time.time()
 
-        status_text = f"System Status: {SYSTEM_MSGS[sys_stat]} \n " \
+        status_text = f"System Status: {SYSTEM_MSGS[self._sys_stat]} \n " \
                       f" \n " \
                       f"Vision System: {KINECT_MSGS[kin_stat[0]]} \n " \
                       f" \n " \
@@ -202,21 +239,23 @@ class GUI():
         self._state_est = state_est
         self.update_plot()
         self.update_counter()
-        self.update_message()
-
         self.update_status(imu_stat, kin_stat)
+        self.update_message()
         self.canvas.draw()
         self.root.update_idletasks()
         self.root.update()
 
+        return self._no_completed
+
 
 gui = GUI()
+completed = 0
 while not QUIT:
     time.sleep(0.5)
-    imu_stat = [3, 4, 5, 2]
+    imu_stat = [1, 0, 1, 1]
     kin_stat = [1]
-    gui.update_gui(imu_stat, kin_stat, state_est)
-    gui._state = gui._state + 1
+    completed = gui.update_gui(imu_stat, kin_stat, state_est)
+    #gui._state = gui._state + 1
 
 # def on_key_press(event, canvas, toolbar):
 #     print("you pressed {}".format(event.key))
