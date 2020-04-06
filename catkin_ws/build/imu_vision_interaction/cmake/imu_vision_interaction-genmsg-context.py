@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg;/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg"
+messages_str = "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/kinect_msg.msg;/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg;/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/gui_msg.msg"
 services_str = ""
 pkg_name = "imu_vision_interaction"
 dependencies_str = "std_msgs"

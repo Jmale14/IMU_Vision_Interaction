@@ -14,7 +14,7 @@
 
 (defclass imu_vision_interaction::kinect_msg
   :super ros::object
-  :slots (_im_screw_probs_1 _im_screw_probs_2 _im_screw_probs_3 _im_screw_probs_4 _tally _safe_move ))
+  :slots (_im_screw_probs_1 _im_screw_probs_2 _im_screw_probs_3 _im_screw_probs_4 _tally _safe_move _im_stat ))
 
 (defmethod imu_vision_interaction::kinect_msg
   (:init
@@ -25,6 +25,7 @@
     ((:im_screw_probs_4 __im_screw_probs_4) (make-array 5 :initial-element 0.0 :element-type :float))
     ((:tally __tally) (make-array 5 :initial-element 0.0 :element-type :float))
     ((:safe_move __safe_move) nil)
+    ((:im_stat __im_stat) 0)
     )
    (send-super :init)
    (setq _im_screw_probs_1 __im_screw_probs_1)
@@ -33,6 +34,7 @@
    (setq _im_screw_probs_4 __im_screw_probs_4)
    (setq _tally __tally)
    (setq _safe_move __safe_move)
+   (setq _im_stat (round __im_stat))
    self)
   (:im_screw_probs_1
    (&optional __im_screw_probs_1)
@@ -52,6 +54,9 @@
   (:safe_move
    (&optional __safe_move)
    (if __safe_move (setq _safe_move __safe_move)) _safe_move)
+  (:im_stat
+   (&optional __im_stat)
+   (if __im_stat (setq _im_stat __im_stat)) _im_stat)
   (:serialization-length
    ()
    (+
@@ -66,6 +71,8 @@
     ;; float64[5] _tally
     (* 8    5)
     ;; bool _safe_move
+    1
+    ;; int8 _im_stat
     1
     ))
   (:serialize
@@ -94,6 +101,8 @@
        )
      ;; bool _safe_move
        (if _safe_move (write-byte -1 s) (write-byte 0 s))
+     ;; int8 _im_stat
+       (write-byte _im_stat s)
      ;;
      (if (null strm) (get-output-stream-string s))))
   (:deserialize
@@ -120,11 +129,14 @@
      )
    ;; bool _safe_move
      (setq _safe_move (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; int8 _im_stat
+     (setq _im_stat (sys::peek buf ptr- :char)) (incf ptr- 1)
+     (if (> _im_stat 127) (setq _im_stat (- _im_stat 256)))
    ;;
    self)
   )
 
-(setf (get imu_vision_interaction::kinect_msg :md5sum-) "7d063af4b46c588d600951ce9d186617")
+(setf (get imu_vision_interaction::kinect_msg :md5sum-) "662361b7d3d4f58e85a3c72705f8eef3")
 (setf (get imu_vision_interaction::kinect_msg :datatype-) "imu_vision_interaction/kinect_msg")
 (setf (get imu_vision_interaction::kinect_msg :definition-)
       "float64[5] im_screw_probs_1
@@ -133,10 +145,11 @@ float64[5] im_screw_probs_3
 float64[5] im_screw_probs_4
 float64[5] tally
 bool safe_move
+int8 im_stat
 ")
 
 
 
-(provide :imu_vision_interaction/kinect_msg "7d063af4b46c588d600951ce9d186617")
+(provide :imu_vision_interaction/kinect_msg "662361b7d3d4f58e85a3c72705f8eef3")
 
 

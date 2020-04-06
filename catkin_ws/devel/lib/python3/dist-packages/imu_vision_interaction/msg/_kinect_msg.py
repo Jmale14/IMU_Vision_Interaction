@@ -7,7 +7,7 @@ import struct
 
 
 class kinect_msg(genpy.Message):
-  _md5sum = "7d063af4b46c588d600951ce9d186617"
+  _md5sum = "662361b7d3d4f58e85a3c72705f8eef3"
   _type = "imu_vision_interaction/kinect_msg"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """float64[5] im_screw_probs_1
@@ -15,9 +15,10 @@ float64[5] im_screw_probs_2
 float64[5] im_screw_probs_3
 float64[5] im_screw_probs_4
 float64[5] tally
-bool safe_move"""
-  __slots__ = ['im_screw_probs_1','im_screw_probs_2','im_screw_probs_3','im_screw_probs_4','tally','safe_move']
-  _slot_types = ['float64[5]','float64[5]','float64[5]','float64[5]','float64[5]','bool']
+bool safe_move
+int8 im_stat"""
+  __slots__ = ['im_screw_probs_1','im_screw_probs_2','im_screw_probs_3','im_screw_probs_4','tally','safe_move','im_stat']
+  _slot_types = ['float64[5]','float64[5]','float64[5]','float64[5]','float64[5]','bool','int8']
 
   def __init__(self, *args, **kwds):
     """
@@ -27,7 +28,7 @@ bool safe_move"""
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       im_screw_probs_1,im_screw_probs_2,im_screw_probs_3,im_screw_probs_4,tally,safe_move
+       im_screw_probs_1,im_screw_probs_2,im_screw_probs_3,im_screw_probs_4,tally,safe_move,im_stat
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -48,6 +49,8 @@ bool safe_move"""
         self.tally = [0.] * 5
       if self.safe_move is None:
         self.safe_move = False
+      if self.im_stat is None:
+        self.im_stat = 0
     else:
       self.im_screw_probs_1 = [0.] * 5
       self.im_screw_probs_2 = [0.] * 5
@@ -55,6 +58,7 @@ bool safe_move"""
       self.im_screw_probs_4 = [0.] * 5
       self.tally = [0.] * 5
       self.safe_move = False
+      self.im_stat = 0
 
   def _get_types(self):
     """
@@ -73,7 +77,8 @@ bool safe_move"""
       buff.write(_get_struct_5d().pack(*self.im_screw_probs_3))
       buff.write(_get_struct_5d().pack(*self.im_screw_probs_4))
       buff.write(_get_struct_5d().pack(*self.tally))
-      buff.write(_get_struct_B().pack(self.safe_move))
+      _x = self
+      buff.write(_get_struct_Bb().pack(_x.safe_move, _x.im_stat))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -99,9 +104,10 @@ bool safe_move"""
       start = end
       end += 40
       self.tally = _get_struct_5d().unpack(str[start:end])
+      _x = self
       start = end
-      end += 1
-      (self.safe_move,) = _get_struct_B().unpack(str[start:end])
+      end += 2
+      (_x.safe_move, _x.im_stat,) = _get_struct_Bb().unpack(str[start:end])
       self.safe_move = bool(self.safe_move)
       return self
     except struct.error as e:
@@ -120,7 +126,8 @@ bool safe_move"""
       buff.write(self.im_screw_probs_3.tostring())
       buff.write(self.im_screw_probs_4.tostring())
       buff.write(self.tally.tostring())
-      buff.write(_get_struct_B().pack(self.safe_move))
+      _x = self
+      buff.write(_get_struct_Bb().pack(_x.safe_move, _x.im_stat))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -147,9 +154,10 @@ bool safe_move"""
       start = end
       end += 40
       self.tally = numpy.frombuffer(str[start:end], dtype=numpy.float64, count=5)
+      _x = self
       start = end
-      end += 1
-      (self.safe_move,) = _get_struct_B().unpack(str[start:end])
+      end += 2
+      (_x.safe_move, _x.im_stat,) = _get_struct_Bb().unpack(str[start:end])
       self.safe_move = bool(self.safe_move)
       return self
     except struct.error as e:
@@ -159,12 +167,12 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_B = None
-def _get_struct_B():
-    global _struct_B
-    if _struct_B is None:
-        _struct_B = struct.Struct("<B")
-    return _struct_B
+_struct_Bb = None
+def _get_struct_Bb():
+    global _struct_Bb
+    if _struct_Bb is None:
+        _struct_Bb = struct.Struct("<Bb")
+    return _struct_Bb
 _struct_5d = None
 def _get_struct_5d():
     global _struct_5d

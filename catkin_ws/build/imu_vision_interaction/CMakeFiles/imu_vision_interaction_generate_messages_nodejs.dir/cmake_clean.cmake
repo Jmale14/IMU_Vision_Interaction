@@ -2,6 +2,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/imu_vision_interaction_generate_messages_nodejs"
   "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/kinect_msg.js"
   "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/IMU_msg.js"
+  "/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/gennodejs/ros/imu_vision_interaction/msg/gui_msg.js"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -11,4 +11,6 @@
           TALLY
           SAFE_MOVE-VAL
           SAFE_MOVE
+          IM_STAT-VAL
+          IM_STAT
 ))

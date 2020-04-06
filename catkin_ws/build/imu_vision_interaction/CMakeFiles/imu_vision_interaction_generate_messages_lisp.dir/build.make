@@ -55,6 +55,7 @@ include imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messag
 
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg/kinect_msg.lisp
 imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg/IMU_msg.lisp
+imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg/gui_msg.lisp
 
 
 /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg/kinect_msg.lisp: /opt/ros/melodic/lib/genlisp/gen_lisp.py
@@ -67,9 +68,15 @@ imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Lisp code from imu_vision_interaction/IMU_msg.msg"
 	cd /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/imu_vision_interaction && ../catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/melodic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/IMU_msg.msg -Iimu_vision_interaction:/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p imu_vision_interaction -o /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg
 
+/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg/gui_msg.lisp: /opt/ros/melodic/lib/genlisp/gen_lisp.py
+/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg/gui_msg.lisp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/gui_msg.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Lisp code from imu_vision_interaction/gui_msg.msg"
+	cd /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/build/imu_vision_interaction && ../catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/melodic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg/gui_msg.msg -Iimu_vision_interaction:/home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/src/imu_vision_interaction/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p imu_vision_interaction -o /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg
+
 imu_vision_interaction_generate_messages_lisp: imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp
 imu_vision_interaction_generate_messages_lisp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg/kinect_msg.lisp
 imu_vision_interaction_generate_messages_lisp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg/IMU_msg.lisp
+imu_vision_interaction_generate_messages_lisp: /home/james/PycharmProjects/IMU_Vision_Interaction/catkin_ws/devel/share/common-lisp/ros/imu_vision_interaction/msg/gui_msg.lisp
 imu_vision_interaction_generate_messages_lisp: imu_vision_interaction/CMakeFiles/imu_vision_interaction_generate_messages_lisp.dir/build.make
 
 .PHONY : imu_vision_interaction_generate_messages_lisp

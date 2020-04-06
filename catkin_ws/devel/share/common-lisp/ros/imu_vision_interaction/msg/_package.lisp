@@ -3,6 +3,8 @@
   (:export
    "<IMU_MSG>"
    "IMU_MSG"
+   "<GUI_MSG>"
+   "GUI_MSG"
    "<KINECT_MSG>"
    "KINECT_MSG"
   ))
