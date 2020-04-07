@@ -1,3 +1,4 @@
 # Project exclude paths
 /venv/
 /freenect_stack/
+/catkin_ws/src/imu_vision_interaction/freenect_stack/
