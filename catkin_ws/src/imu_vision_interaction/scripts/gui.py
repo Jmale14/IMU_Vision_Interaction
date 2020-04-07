@@ -66,7 +66,9 @@ class GUI:
 
         # canvas.mpl_connect("key_press_event", on_key_press(canvas, toolbar))
 
-        self.message_obj = Tk.Text(master=self.root, width=50, height=2, pady=20)
+        self.message_obj = Tk.Text(master=self.root, width=70, height=2, pady=20)
+        self.message_obj.tag_add("center", "1.0", "end")
+        self.message_obj.tag_configure("center", justify="center")
         self.message_obj.grid(row=4, column=0, columnspan=2)
 
         load = Image.open("logo.jpg")
@@ -111,10 +113,10 @@ class GUI:
     def _next_part(self):
         if 2 <= self._state <= 5:
             self._state = 7
-            if self._state_est._final[-1, 1] == 0:
+            if self._state_est_final[-1, 1] == 1:
                 self._state = 8
 
-            if self._state_est._final[-1, 0] == 0:
+            if self._state_est_final[-1, 0] == 3:
                 self._state = 9
             self._timer_flag = True
             self._msg_timer = time.time()
@@ -122,12 +124,17 @@ class GUI:
         elif self._state == 6 | self._timer_flag:
             self._state = 2
             self._no_completed = self._no_completed + 1
+            self._state_est_final = np.zeros((1, 2))
+            self._state_est_im = np.zeros((1, 2))
+            self._state_est_imu = np.zeros((1, 2))
             self._timer_flag = False
             self._msg_timer = time.time()
         pass
 
     def update_counter(self):
-        counter_text = f"Screws: 0 \n Bolts: 0 \n \n Completed: {self._no_completed}"
+        counter_text = f"Screws: {self._state_est_final[-1, 0]:.0f} \n " \
+                       f"Bolts: {self._state_est_final[-1, 1]:.0f} \n \n " \
+                       f"Completed: {self._no_completed:.0f}"
         self.counter_obj.delete("1.0", Tk.END)
         self.counter_obj.insert(Tk.INSERT, counter_text)
         pass
@@ -136,15 +143,15 @@ class GUI:
         state_msgs = [f'Starting',  # 0
                       f'Initialising Sensors',  # 1
                       f'Ready to begin part {self._no_completed+1}',  # 2
-                      f'Part {self._no_completed+1} still requires {self._state_est_final[-1, 0]} screws and {self._state_est_final[-1, 1]} bolts',  # 3
-                      f'Part {self._no_completed+1} still requires {self._state_est_final[-1, 0]} screws',  # 4
-                      f'Part {self._no_completed+1} still requires {self._state_est_final[-1, 1]} bolts',  # 5
+                      f'Part {self._no_completed+1} still requires {3-self._state_est_final[-1, 0]:.0f} screws and {1-self._state_est_final[-1, 1]:.0f} bolts',  # 3
+                      f'Part {self._no_completed+1} still requires {3-self._state_est_final[-1, 0]:.0f} screws',  # 4
+                      f'Part {self._no_completed+1} still requires {1-self._state_est_final[-1, 1]:.0f} bolts',  # 5
                       f'This part seems done, press next part or quit button',  # 6
-                      f'Part still missing {self._state_est_final[-1, 0]} screws and {self._state_est_final[-1, 1]} bolts \n'
+                      f'Part still missing {3-self._state_est_final[-1, 0]:.0f} screws and {1-self._state_est_final[-1, 1]:.0f} bolts \n'
                       f'Press Next Part button again if you''re sure',  # 7
-                      f'Part still missing {self._state_est_final[-1, 0]} screws \n'
+                      f'Part still missing {3-self._state_est_final[-1, 0]:.0f} screws \n'
                       f'Press Next Part button again if you''re sure',  # 8
-                      f'Part still missing {self._state_est_final[-1, 1]} bolts \n'
+                      f'Part still missing {1-self._state_est_final[-1, 1]:.0f} bolts \n'
                       f'Press Next Part button again if you''re sure',  # 9
                       f'Sensor error, see status dialogue',  # 10
                       f'Quitting ',  # 11
@@ -163,13 +170,13 @@ class GUI:
 
             if 3 <= self._state <= 6:
 
-                if (self._state_est_final[-1, 1] == 0) & (self._state_est_final[-1, 0] == 0):
+                if (self._state_est_final[-1, 1] == 1) & (self._state_est_final[-1, 0] == 3):
                     self._state = 6
 
-                if self._state_est_final[-1, 1] == 0:
+                if self._state_est_final[-1, 1] == 1:
                     self._state = 4
 
-                if self._state_est_final[-1, 0] == 0:
+                if self._state_est_final[-1, 0] == 3:
                     self._state = 5
 
 
@@ -177,7 +184,7 @@ class GUI:
         self.message_obj.delete("1.0", Tk.END)
         if self._state > len(state_msgs) - 1:
             self._state = len(state_msgs) - 1
-        self.message_obj.insert(Tk.INSERT, state_msgs[self._state])
+        self.message_obj.insert("1.0", state_msgs[self._state], "center")
         pass
 
     def update_status(self):
@@ -200,9 +207,9 @@ class GUI:
                       f"Vision System: {KINECT_MSGS[self._im_stat]} \n " \
                       f" \n " \
                       f"IMU System: {IMU_SYS_MSGS[self._imu_stat[3]]} \n " \
-                      f"  1: {IMU_MSGS[self._imu_stat[0]]} \n " \
-                      f"  2: {IMU_MSGS[self._imu_stat[1]]} \n " \
-                      f"  3: {IMU_MSGS[self._imu_stat[2]]} \n "
+                      f" Hand: {IMU_MSGS[self._imu_stat[0]]} \n " \
+                      f"Wrist: {IMU_MSGS[self._imu_stat[1]]} \n " \
+                      f"  Arm: {IMU_MSGS[self._imu_stat[2]]} \n "
         self.status_obj.delete("1.0", Tk.END)
         self.status_obj.insert(Tk.INSERT, status_text)
         pass
@@ -222,6 +229,9 @@ class GUI:
             ax.set_title(Titles[i])
             ax.legend(legend)
             ax.set_ylim(bottom=0)
+
+        axs[0, 0].set_ylim(top=3)
+        axs[0, 1].set_ylim(top=1)
 
         ax = axs[1, 0]
         ax.cla()
@@ -255,9 +265,9 @@ class GUI:
         self._pub.publish(self._no_completed)
 
     def update_data(self, data):
-        self._state_est_final = np.vstack((self._state_est_final, [4 - data.state_est_final[0], 1 - data.state_est_final[1]]))
-        self._state_est_im = np.vstack((self._state_est_im, [4 - data.state_est_im[0], 1 - data.state_est_im[1]]))
-        self._state_est_imu = np.vstack((self._state_est_imu, [4 - data.state_est_imu[0], 1 - data.state_est_imu[1]]))
+        self._state_est_final = np.vstack((self._state_est_final, [data.state_est_final[0], data.state_est_final[1]]))
+        self._state_est_im = np.vstack((self._state_est_im, [data.state_est_im[0], data.state_est_im[1]]))
+        self._state_est_imu = np.vstack((self._state_est_imu, [data.state_est_imu[0], data.state_est_imu[1]]))
         self._imu_stat = data.imu_stat
         self._im_stat = data.kin_stat
         self._imu_pred = data.imu_pred
