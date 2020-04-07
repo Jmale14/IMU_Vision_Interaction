@@ -12,6 +12,7 @@ import time
 from PIL import Image, ImageTk
 import rospy
 from imu_vision_interaction.msg import gui_msg
+from std_msgs.msg import Int8
 
 
 # class StateEst:
@@ -23,10 +24,8 @@ from imu_vision_interaction.msg import gui_msg
 
 CATEGORIES = ['AllenKeyIn', 'AllenKeyOut', 'ScrewingIn', 'ScrewingOut', 'Null']
 pos = np.arange(len(CATEGORIES))
-imu_state_hist = np.array([4, 4, 4], dtype=np.int)
-im_screw_hist = np.zeros((1, 3), dtype=np.int)
-imu_pred = np.zeros(5)
-#state_est = StateEst()
+#imu_state_hist = np.array([4, 4, 4], dtype=np.int)
+#im_screw_hist = np.zeros((1, 3), dtype=np.int)
 
 plt.ion()
 
@@ -50,6 +49,9 @@ class GUI:
         self._state_est_imu = np.zeros((1, 2))
         self._imu_stat = [2, 2, 2, 2]
         self._im_stat = 2
+        self._pub = rospy.Publisher('completed_parts', Int8, queue_size=10)
+        self._imu_pred = np.zeros(5)
+        self._im_pred = np.zeros(2)
 
         self.root = Tk.Tk()
         self.root.wm_title("IMU and Vision Interaction System")
@@ -206,8 +208,6 @@ class GUI:
         pass
 
     def update_plot(self):
-        global k
-        k = k + 1
         global CATEGORIES
         legend = ['Image', 'IMU', 'Final']
         Titles = ['Total No. Screws', 'Total No. Bolts']
@@ -225,7 +225,7 @@ class GUI:
 
         ax = axs[1, 0]
         ax.cla()
-        ax.bar(pos, imu_pred, align='center', alpha=0.5)
+        ax.bar(pos, self._imu_pred, align='center', alpha=0.5)
         ax.set_xticks(pos)
         ax.set_xticklabels(CATEGORIES)
         ax.set_ylabel('Confidence')
@@ -234,10 +234,10 @@ class GUI:
 
         ax = axs[1, 1]
         ax.cla()
-        ax.bar([1, 2], [im_screw_hist[-1, 1], im_screw_hist[-1, 2]], align='center', alpha=0.5)
+        ax.bar([1, 2], self._im_pred, align='center', alpha=0.5)
         ax.set_xticks([1, 2])
         ax.set_xticklabels(['Screws', 'Bolts'])
-        ax.set_ylabel('Confidence')
+        ax.set_ylabel('Number')
         ax.set_ylim([0, 4])
         ax.set_title('Current image Prediction')
 
@@ -252,14 +252,16 @@ class GUI:
         self.root.update_idletasks()
         self.root.update()
 
-        return self._no_completed
+        self._pub.publish(self._no_completed)
 
     def update_data(self, data):
         self._state_est_final = np.vstack((self._state_est_final, [4 - data.state_est_final[0], 1 - data.state_est_final[1]]))
         self._state_est_im = np.vstack((self._state_est_im, [4 - data.state_est_im[0], 1 - data.state_est_im[1]]))
         self._state_est_imu = np.vstack((self._state_est_imu, [4 - data.state_est_imu[0], 1 - data.state_est_imu[1]]))
-        self._im_stat = data.imu_stat
+        self._imu_stat = data.imu_stat
         self._im_stat = data.kin_stat
+        self._imu_pred = data.imu_pred
+        self._im_pred = data.im_pred
 
 
 def listener():

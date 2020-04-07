@@ -28,7 +28,9 @@ struct gui_msg_
     , kin_stat(0)
     , state_est_final()
     , state_est_im()
-    , state_est_imu()  {
+    , state_est_imu()
+    , imu_pred()
+    , im_pred()  {
       imu_stat.assign(0);
 
       state_est_final.assign(0);
@@ -36,13 +38,19 @@ struct gui_msg_
       state_est_im.assign(0);
 
       state_est_imu.assign(0);
+
+      imu_pred.assign(0.0);
+
+      im_pred.assign(0.0);
   }
   gui_msg_(const ContainerAllocator& _alloc)
     : imu_stat()
     , kin_stat(0)
     , state_est_final()
     , state_est_im()
-    , state_est_imu()  {
+    , state_est_imu()
+    , imu_pred()
+    , im_pred()  {
   (void)_alloc;
       imu_stat.assign(0);
 
@@ -51,24 +59,34 @@ struct gui_msg_
       state_est_im.assign(0);
 
       state_est_imu.assign(0);
+
+      imu_pred.assign(0.0);
+
+      im_pred.assign(0.0);
   }
 
 
 
-   typedef boost::array<int16_t, 4>  _imu_stat_type;
+   typedef boost::array<int8_t, 4>  _imu_stat_type;
   _imu_stat_type imu_stat;
 
-   typedef int16_t _kin_stat_type;
+   typedef int8_t _kin_stat_type;
   _kin_stat_type kin_stat;
 
-   typedef boost::array<int16_t, 2>  _state_est_final_type;
+   typedef boost::array<int8_t, 2>  _state_est_final_type;
   _state_est_final_type state_est_final;
 
-   typedef boost::array<int16_t, 2>  _state_est_im_type;
+   typedef boost::array<int8_t, 2>  _state_est_im_type;
   _state_est_im_type state_est_im;
 
-   typedef boost::array<int16_t, 2>  _state_est_imu_type;
+   typedef boost::array<int8_t, 2>  _state_est_imu_type;
   _state_est_imu_type state_est_imu;
+
+   typedef boost::array<double, 5>  _imu_pred_type;
+  _imu_pred_type imu_pred;
+
+   typedef boost::array<double, 2>  _im_pred_type;
+  _im_pred_type im_pred;
 
 
 
@@ -103,7 +121,9 @@ bool operator==(const ::imu_vision_interaction::gui_msg_<ContainerAllocator1> & 
     lhs.kin_stat == rhs.kin_stat &&
     lhs.state_est_final == rhs.state_est_final &&
     lhs.state_est_im == rhs.state_est_im &&
-    lhs.state_est_imu == rhs.state_est_imu;
+    lhs.state_est_imu == rhs.state_est_imu &&
+    lhs.imu_pred == rhs.imu_pred &&
+    lhs.im_pred == rhs.im_pred;
 }
 
 template<typename ContainerAllocator1, typename ContainerAllocator2>
@@ -160,12 +180,12 @@ struct MD5Sum< ::imu_vision_interaction::gui_msg_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "34f592a2b757ac695ceb8d8637e5e187";
+    return "bf8981175370443a047e2d3397a3cff7";
   }
 
   static const char* value(const ::imu_vision_interaction::gui_msg_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x34f592a2b757ac69ULL;
-  static const uint64_t static_value2 = 0x5ceb8d8637e5e187ULL;
+  static const uint64_t static_value1 = 0xbf8981175370443aULL;
+  static const uint64_t static_value2 = 0x047e2d3397a3cff7ULL;
 };
 
 template<class ContainerAllocator>
@@ -184,11 +204,13 @@ struct Definition< ::imu_vision_interaction::gui_msg_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "int16[4] imu_stat\n"
-"int16 kin_stat\n"
-"int16[2] state_est_final\n"
-"int16[2] state_est_im\n"
-"int16[2] state_est_imu\n"
+    return "int8[4] imu_stat\n"
+"int8 kin_stat\n"
+"int8[2] state_est_final\n"
+"int8[2] state_est_im\n"
+"int8[2] state_est_imu\n"
+"float64[5] imu_pred\n"
+"float64[2] im_pred\n"
 ;
   }
 
@@ -212,6 +234,8 @@ namespace serialization
       stream.next(m.state_est_final);
       stream.next(m.state_est_im);
       stream.next(m.state_est_imu);
+      stream.next(m.imu_pred);
+      stream.next(m.im_pred);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -234,27 +258,39 @@ struct Printer< ::imu_vision_interaction::gui_msg_<ContainerAllocator> >
     for (size_t i = 0; i < v.imu_stat.size(); ++i)
     {
       s << indent << "  imu_stat[" << i << "]: ";
-      Printer<int16_t>::stream(s, indent + "  ", v.imu_stat[i]);
+      Printer<int8_t>::stream(s, indent + "  ", v.imu_stat[i]);
     }
     s << indent << "kin_stat: ";
-    Printer<int16_t>::stream(s, indent + "  ", v.kin_stat);
+    Printer<int8_t>::stream(s, indent + "  ", v.kin_stat);
     s << indent << "state_est_final[]" << std::endl;
     for (size_t i = 0; i < v.state_est_final.size(); ++i)
     {
       s << indent << "  state_est_final[" << i << "]: ";
-      Printer<int16_t>::stream(s, indent + "  ", v.state_est_final[i]);
+      Printer<int8_t>::stream(s, indent + "  ", v.state_est_final[i]);
     }
     s << indent << "state_est_im[]" << std::endl;
     for (size_t i = 0; i < v.state_est_im.size(); ++i)
     {
       s << indent << "  state_est_im[" << i << "]: ";
-      Printer<int16_t>::stream(s, indent + "  ", v.state_est_im[i]);
+      Printer<int8_t>::stream(s, indent + "  ", v.state_est_im[i]);
     }
     s << indent << "state_est_imu[]" << std::endl;
     for (size_t i = 0; i < v.state_est_imu.size(); ++i)
     {
       s << indent << "  state_est_imu[" << i << "]: ";
-      Printer<int16_t>::stream(s, indent + "  ", v.state_est_imu[i]);
+      Printer<int8_t>::stream(s, indent + "  ", v.state_est_imu[i]);
+    }
+    s << indent << "imu_pred[]" << std::endl;
+    for (size_t i = 0; i < v.imu_pred.size(); ++i)
+    {
+      s << indent << "  imu_pred[" << i << "]: ";
+      Printer<double>::stream(s, indent + "  ", v.imu_pred[i]);
+    }
+    s << indent << "im_pred[]" << std::endl;
+    for (size_t i = 0; i < v.im_pred.size(); ++i)
+    {
+      s << indent << "  im_pred[" << i << "]: ";
+      Printer<double>::stream(s, indent + "  ", v.im_pred[i]);
     }
   }
 };

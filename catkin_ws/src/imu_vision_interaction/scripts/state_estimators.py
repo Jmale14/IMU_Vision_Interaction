@@ -11,11 +11,11 @@ def im_state_est(im_screw_hst):
 
     im_count = [0, 0]
     try:
-        im_count[0] = np.argmax(screw_bins)
+        im_count[0] = int(np.argmax(screw_bins))
     except ValueError:
         pass
     try:
-        im_count[1] = np.argmax(bolt_bins)
+        im_count[1] = int(np.argmax(bolt_bins))
     except ValueError:
         pass
 
@@ -41,16 +41,16 @@ def current_state_est(im_screw_hist, imu_state_hist, state_est, im_stat, imu_sta
         imu_state_hist = imu_state_est(imu_state_hist)
         imu_count = np.bincount(np.array(imu_state_hist, dtype=np.int))
         # print(f"Count:{count}")
-        state_est._imu = [imu_count[2], imu_count[0]]
+        state_est._imu = [int(imu_count[2]), int(imu_count[0])]
 
     if im_stat == 1:
         state_est._im = im_state_est(im_screw_hist)
 
     if (im_stat == 1) & all((i == 1) for i in imu_stat):
         final_est = [None, None]
-        final_est[0] = round(np.mean([state_est._imu[0], state_est._im[0]]))  # screws
-        final_est[1] = round(np.mean([state_est._imu[1], state_est._im[1]]))  # bolts
+        final_est[0] = int(round(np.mean([state_est._imu[0], state_est._im[0]])))  # screws
+        final_est[1] = int(round(np.mean([state_est._imu[1], state_est._im[1]])))  # bolts
         state_est._final = final_est
-    print(f"IMU:{state_est._imu} IM:{state_est._im} Final:{state_est._final}")
+    #print(f"IMU:{state_est._imu} IM:{state_est._im} Final:{state_est._final}")
 
     return state_est, imu_state_hist
