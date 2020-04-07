@@ -82,10 +82,12 @@ class FusionListener:
         self._im_stat = 2
         self._imu_stat = [2, 2, 2, 2]
         self._state_est = self.StateEst()
+        self._no_completed = 0
 
         self.pub = rospy.Publisher('gui_Data', gui_msg, queue_size=1)
         self.imu_sub = rospy.Subscriber('IMU_Data', IMU_msg, self.imu_callback)
         self.im_sub = rospy.Subscriber('Image_Screws', kinect_msg, self.imscrews_callback)
+        self.gui_sub = rospy.Subscriber('completed_parts', Int8, self.gui_callback)
 
     class StateEst:
         def __init__(self):
@@ -98,9 +100,6 @@ class FusionListener:
         self._imu_pred = data.imu_msg
         self._imu_state_hist = np.hstack((self._imu_state_hist, np.argmax(self._imu_pred)))
         #rospy.loginfo(rospy.get_caller_id() + ' - I heard %s', data.data)
-
-        cutoff_t = time.time() - 5
-        self._im_screw_hist = np.delete(self._im_screw_hist, np.where(self._im_screw_hist[:, 0] < cutoff_t)[0], axis=0)
         self.fusion()
 
         # if args.disp:
@@ -109,6 +108,8 @@ class FusionListener:
     def imscrews_callback(self, data):
         self._im_stat = data.im_stat
         self._im_screw_hist = np.vstack((self._im_screw_hist, [time.time(), data.tally[0], data.tally[2]]))
+        cutoff_t = time.time() - 5
+        self._im_screw_hist = np.delete(self._im_screw_hist, np.where(self._im_screw_hist[:, 0] < cutoff_t)[0], axis=0)
         self.fusion()
         # rospy.loginfo(f"{rospy.get_caller_id()}:"
         #               f"    Safe Move: {data.safe_move} \n"
@@ -118,6 +119,11 @@ class FusionListener:
         #               f"                             {data.im_screw_probs_4} \n"
         #               f"    Predictions Tally: {data.tally}")
 
+    def gui_callback(self, data):
+        if data.data != self._no_completed:
+            self._no_completed = data.data
+            self._state_est = self.StateEst()
+
     def pub_message(self):
         rate = rospy.Rate(10)
         msg = gui_msg()
@@ -126,9 +132,11 @@ class FusionListener:
         msg.state_est_final = self._state_est._final
         msg.state_est_im = self._state_est._im
         msg.state_est_imu = self._state_est._imu
+        msg.imu_pred = self._imu_pred
+        msg.im_pred = [self._im_screw_hist[-1, 1], self._im_screw_hist[-1, 2]]
         self.pub.publish(msg)
         if time.time() - self._timer > 1:
-            print('published')
+            print(f"IMU:{self._state_est._imu} IM:{self._state_est._im} Final:{self._state_est._final}")
             self._timer = time.time()
         rate.sleep()
 
@@ -136,7 +144,6 @@ class FusionListener:
         self._state_est, self._imu_state_hist = \
             current_state_est(self._im_screw_hist, self._imu_state_hist, self._state_est, self._im_stat, self._imu_stat)
         self.pub_message()
-
 
 
 def main():

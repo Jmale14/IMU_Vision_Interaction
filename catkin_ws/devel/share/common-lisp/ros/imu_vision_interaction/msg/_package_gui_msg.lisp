@@ -9,4 +9,8 @@
           STATE_EST_IM
           STATE_EST_IMU-VAL
           STATE_EST_IMU
+          IMU_PRED-VAL
+          IMU_PRED
+          IM_PRED-VAL
+          IM_PRED
 ))
