@@ -123,22 +123,20 @@ class ImScrewDetector:
         keypoints = self._detector.detect(gray)
 
         listpoints = []
-        pointpts = np.zeros((len(keypoints), 2))
-        p = 0
-        for point in keypoints:
-            listpoints.append(point)
-            pointpts[p] = [point.pt[0], point.pt[1]]
-            p = p+1
+        pointpts = np.empty((0, 2))
 
         i = 0
-        guesses = [None] * len(keypoints)
+        guesses = []
         for point in keypoints:
             rect = ((point.pt[0], point.pt[1]), (point.size, point.size), 0)
             box_pts = np.int0(cv2.boxPoints(rect))
             image = self.rot_crop(grayIN, rect, box_pts, self._size, self._size)
             image = image.reshape(1, 28, 28, 1)
             guess = self._model.predict_proba(image)
-            guesses[i] = guess[0]
+            if int(np.argmax(guess[0])) != 4:
+                guesses.append(guess[0])
+                pointpts = np.append(pointpts, [[point.pt[0], point.pt[1]]], axis=0)
+                listpoints.append(point)
             i = i + 1
 
         i = 0
@@ -151,21 +149,21 @@ class ImScrewDetector:
 
             for p in range(0, len(closestptsidx)):
                 idx = closestptsidx[p]
-                if np.max(guesses[idx]) > 0.999999:
-                    guess = int(np.argmax(guesses[idx]))
-                    tally[guess] = tally[guess] + 1
-                    if guess == 4:
-                        pass
-                    else:
-                        #screw_probs[p] = prob
-                        fourkeypoints[p] = keypoints[idx]
+                #if np.max(guesses[idx]) > 0.999999:
+                guess = int(np.argmax(guesses[idx]))
+                tally[guess] = tally[guess] + 1
+                if guess == 4:
+                    pass
+                else:
+                    #screw_probs[p] = prob
+                    fourkeypoints[p] = keypoints[idx]
 
-                        if disp:
-                            txt = f"{self._CATEGORIES[guess]}"
-                            frame = cv2.drawKeypoints(frame, fourkeypoints, np.array([]), (0, 0, 255),
-                                                      cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-                            frame = cv2.putText(frame, txt, (int(keypoints[idx].pt[0]), int(keypoints[idx].pt[1])),
-                                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+                    if disp:
+                        txt = f"{self._CATEGORIES[guess]}"
+                        frame = cv2.drawKeypoints(frame, fourkeypoints, np.array([]), (0, 0, 255),
+                                                  cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+                        frame = cv2.putText(frame, txt, (int(keypoints[idx].pt[0]), int(keypoints[idx].pt[1])),
+                                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
                 i = i + 1
 
