@@ -76,9 +76,10 @@ pos = np.arange(len(CATEGORIES))
 class FusionListener:
     def __init__(self):
         self._imu_pred = np.zeros(5)
-        self._im_screw_hist = np.zeros((1, 3), dtype=np.int)
+        self._imu_pred_hist = np.empty(5)
+        self._im_screw_hist = np.zeros((1, 5))
         self._timer = time.time()
-        self._imu_state_hist = np.array([4, 4, 4], dtype=np.int)
+        self._imu_state_hist = np.array([4, 1])
         self._im_stat = 2
         self._imu_stat = [2, 2, 2, 2]
         self._state_est = self.StateEst()
@@ -91,14 +92,15 @@ class FusionListener:
 
     class StateEst:
         def __init__(self):
-            self._final = np.zeros(2, dtype=np.int)
-            self._im = np.zeros(2, dtype=np.int)
-            self._imu = np.zeros(2, dtype=np.int)
+            self._final = np.zeros(2)
+            self._im = np.zeros(2)
+            self._imu = np.zeros(2)
 
     def imu_callback(self, data):
         self._imu_stat = data.imu_stat
         self._imu_pred = data.imu_msg
-        self._imu_state_hist = np.hstack((self._imu_state_hist, np.argmax(self._imu_pred)))
+        self._imu_state_hist = np.vstack((self._imu_state_hist, [np.argmax(self._imu_pred), None]))
+        self._imu_pred_hist = np.vstack((self._imu_pred_hist, self._imu_pred))
         #rospy.loginfo(rospy.get_caller_id() + ' - I heard %s', data.data)
         self.fusion()
 
@@ -107,7 +109,15 @@ class FusionListener:
 
     def imscrews_callback(self, data):
         self._im_stat = data.im_stat
-        self._im_screw_hist = np.vstack((self._im_screw_hist, [time.time(), data.tally[0], data.tally[2]]))
+        screw_probs = [data.im_screw_probs_1[0],data.im_screw_probs_1[1],data.im_screw_probs_1[2],data.im_screw_probs_1[3]]
+        screw_sum = 0
+        bolt_prob = 0
+        for entry in screw_probs:
+            if np.argmax(entry) == 0:
+                screw_sum += entry[0]
+            elif (np.argmax(entry) == 2) & (entry[2] > bolt_prob):
+                bolt_prob == entry[2]
+        self._im_screw_hist = np.vstack((self._im_screw_hist, [time.time(), data.tally[0], data.tally[2], screw_sum, bolt_prob]))
         cutoff_t = time.time() - 5
         self._im_screw_hist = np.delete(self._im_screw_hist, np.where(self._im_screw_hist[:, 0] < cutoff_t)[0], axis=0)
         self.fusion()
@@ -129,9 +139,9 @@ class FusionListener:
         msg = gui_msg()
         msg.imu_stat = self._imu_stat
         msg.kin_stat = self._im_stat
-        msg.state_est_final = self._state_est._final
-        msg.state_est_im = self._state_est._im
-        msg.state_est_imu = self._state_est._imu
+        msg.state_est_final = int(np.round(self._state_est._final))
+        msg.state_est_im = int(np.round(self._state_est._im))
+        msg.state_est_imu = int(np.round(self._state_est._imu))
         msg.imu_pred = self._imu_pred
         msg.im_pred = [self._im_screw_hist[-1, 1], self._im_screw_hist[-1, 2]]
         self.pub.publish(msg)
@@ -141,8 +151,8 @@ class FusionListener:
         rate.sleep()
 
     def fusion(self):
-        self._state_est, self._imu_state_hist = \
-            current_state_est(self._im_screw_hist, self._imu_state_hist, self._state_est, self._im_stat, self._imu_stat)
+        self._state_est, self._imu_state_hist, self._imu_pred_hist = \
+            current_state_est(self._im_screw_hist, self._imu_state_hist, self._state_est, self._im_stat, self._imu_stat, self._imu_pred_hist)
         self.pub_message()
 
 
