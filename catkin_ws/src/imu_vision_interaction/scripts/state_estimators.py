@@ -5,10 +5,9 @@ import numpy as np
 
 
 def im_state_est(im_screw_hst):
-    #Could add probabilities to bin count as weight parameter?
+    # Could add probabilities to bin count as weight parameter?
     screw_bins = np.bincount(np.array(im_screw_hst[:, 1], dtype=np.int), im_screw_hst[:, 3])
     bolt_bins = np.bincount(np.array(im_screw_hst[:, 2], dtype=np.int), im_screw_hst[:, 4])
-
     im_count = [0, 0]
     try:
         im_count[0] = np.argmax(screw_bins)
@@ -27,20 +26,27 @@ def im_state_est(im_screw_hst):
 
 
 def imu_state_est(imu_state_hist, imu_pred_hist):
-    #print(f"1: {imu_state_hist}")
-    #'Dilation' filter to remove single erroneous predictions
-    if np.shape(imu_state_hist)[0] > 3:
+    # 'Dilation' filter to remove single erroneous predictions
+    #print(f"1-{imu_state_hist}")
+    #print(f"2-{imu_pred_hist}")
+    if np.shape(imu_state_hist)[0] >= 3:
+        #print('lol')
         if imu_state_hist[-1, 0] == imu_state_hist[-3, 0]:
+            #print('banter')
             imu_state_hist[-2, 0] = imu_state_hist[-1, 0]
 
-        #Group predictions of same type together
+        # Group predictions of same type together
         if imu_state_hist[-2, 0] == imu_state_hist[-3, 0]:
-            imu_state_hist = np.delete(imu_state_hist, -2)
+            imu_state_hist = np.delete(imu_state_hist, -2, 0)
+            #print('here')
+            #print(f"1-{imu_state_hist}")
             imu_state_hist[-1, 1] = np.mean(imu_pred_hist[:, imu_state_hist[-1, 0]])
         else:
+            #print('sup')
             imu_pred_hist = np.empty(5)
 
-    #print(f"2: {imu_state_hist}")
+    #print(f"3-{imu_state_hist}")
+    #print(f"4-{imu_pred_hist}")
     return imu_state_hist, imu_pred_hist
 
 
@@ -67,6 +73,6 @@ def current_state_est(im_screw_hist, imu_state_hist, state_est, im_stat, imu_sta
         if final_est[1] > 1:
             final_est[1] = 1
         state_est._final = final_est
-    #print(f"IMU:{state_est._imu} IM:{state_est._im} Final:{state_est._final}")
+    # print(f"IMU:{state_est._imu} IM:{state_est._im} Final:{state_est._final}")
 
     return state_est, imu_state_hist, imu_pred_hist

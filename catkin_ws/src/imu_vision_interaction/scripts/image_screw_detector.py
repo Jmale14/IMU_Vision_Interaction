@@ -119,9 +119,18 @@ class ImScrewDetector:
         kernel = np.ones((3, 3), np.uint8)
         gray = cv2.erode(gray, kernel, iterations=4)
 
+  
+
         # Detect blobs.
         keypoints = self._detector.detect(gray)
 
+        gray_disp = cv2.drawKeypoints(gray, keypoints, np.array([]), (0, 0, 255),
+                                                  cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+        # if disp:
+        #     cv2.imshow("erosion", gray_disp)
+        #     if cv2.waitKey(10) == 27:
+        #         pass
         listpoints = []
         pointpts = np.empty((0, 2))
 

@@ -109,15 +109,15 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_4b = None
-def _get_struct_4b():
-    global _struct_4b
-    if _struct_4b is None:
-        _struct_4b = struct.Struct("<4b")
-    return _struct_4b
 _struct_5d = None
 def _get_struct_5d():
     global _struct_5d
     if _struct_5d is None:
         _struct_5d = struct.Struct("<5d")
     return _struct_5d
+_struct_4b = None
+def _get_struct_4b():
+    global _struct_4b
+    if _struct_4b is None:
+        _struct_4b = struct.Struct("<4b")
+    return _struct_4b

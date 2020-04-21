@@ -488,6 +488,7 @@ def IMUsensorsMain():
     msg = IMU_msg()
     class_pred = CATEGORIES[-1]
     status = [2, 2, 2, 2]
+
     while not quit_IMU:
         status[3] = 2
         for s in shimmers:
@@ -506,8 +507,11 @@ def IMUsensorsMain():
             for p in shimmers:
                 new_data = np.hstack((new_data, shimmers[p]._accel, shimmers[p]._gyro))
             new_data = np.nan_to_num(new_data)
-            for i in range(0, new_data.shape[1]):
-                new_data[:, i] = preprocessing.scale(new_data[:, i])
+            scaler = preprocessing.StandardScaler()
+            # for i in range(0, X.shape[0]):
+            #     scaler = preprocessing.StandardScaler()
+            #     X[i, :, :] = scaler.fit_transform(X[i, :, :])
+            new_data[:, :] = scaler.fit_transform(new_data[:, :])
             status[3] = 1
 
             if args.classify:

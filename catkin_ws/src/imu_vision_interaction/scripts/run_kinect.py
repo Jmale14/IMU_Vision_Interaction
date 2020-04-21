@@ -39,6 +39,15 @@ def kinect_run():
     while not rospy.is_shutdown():
         try:
             image = np.array(frame_convert2.video_cv(freenect.sync_get_video()[0]))
+            height, width, channels = image.shape
+            scale=2
+            centerX,centerY=int(height/2),int(width/2)
+            radiusX,radiusY= int(height/(scale*2)),int(width/(scale*2))
+            minX,maxX=centerX-radiusX,centerX+radiusX
+            minY,maxY=centerY-radiusY,centerY+radiusY
+            image = cv2.resize(image[minX:maxX, minY:maxY], (width, height), interpolation = cv2.INTER_LINEAR)
+
+            #image = cv2.resize(image,None,fx=4, fy=4, interpolation = cv2.INTER_LINEAR)
             status = 1
         except TypeError as e:
             time.sleep(1)

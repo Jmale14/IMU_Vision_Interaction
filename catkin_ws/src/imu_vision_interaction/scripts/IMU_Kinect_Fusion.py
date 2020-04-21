@@ -99,7 +99,7 @@ class FusionListener:
     def imu_callback(self, data):
         self._imu_stat = data.imu_stat
         self._imu_pred = data.imu_msg
-        self._imu_state_hist = np.vstack((self._imu_state_hist, [np.argmax(self._imu_pred), None]))
+        self._imu_state_hist = np.vstack((self._imu_state_hist, [np.argmax(self._imu_pred), 0]))
         self._imu_pred_hist = np.vstack((self._imu_pred_hist, self._imu_pred))
         #rospy.loginfo(rospy.get_caller_id() + ' - I heard %s', data.data)
         self.fusion()
@@ -109,16 +109,16 @@ class FusionListener:
 
     def imscrews_callback(self, data):
         self._im_stat = data.im_stat
-        screw_probs = [data.im_screw_probs_1[0],data.im_screw_probs_1[1],data.im_screw_probs_1[2],data.im_screw_probs_1[3]]
+        screw_probs = [data.im_screw_probs_1, data.im_screw_probs_2, data.im_screw_probs_3, data.im_screw_probs_4]
         screw_sum = 0
         bolt_prob = 0
         for entry in screw_probs:
             if np.argmax(entry) == 0:
                 screw_sum += entry[0]
-            elif (np.argmax(entry) == 2) & (entry[2] > bolt_prob):
-                bolt_prob == entry[2]
+            elif (np.argmax(entry) == 2) & (entry[2] >= bolt_prob):
+                bolt_prob = entry[2]
         self._im_screw_hist = np.vstack((self._im_screw_hist, [time.time(), data.tally[0], data.tally[2], screw_sum, bolt_prob]))
-        cutoff_t = time.time() - 5
+        cutoff_t = time.time() - 1
         self._im_screw_hist = np.delete(self._im_screw_hist, np.where(self._im_screw_hist[:, 0] < cutoff_t)[0], axis=0)
         self.fusion()
         # rospy.loginfo(f"{rospy.get_caller_id()}:"
@@ -139,9 +139,9 @@ class FusionListener:
         msg = gui_msg()
         msg.imu_stat = self._imu_stat
         msg.kin_stat = self._im_stat
-        msg.state_est_final = int(np.round(self._state_est._final))
-        msg.state_est_im = int(np.round(self._state_est._im))
-        msg.state_est_imu = int(np.round(self._state_est._imu))
+        msg.state_est_final = np.round(self._state_est._final).astype(int)
+        msg.state_est_im = np.round(self._state_est._im).astype(int)
+        msg.state_est_imu = np.round(self._state_est._imu).astype(int)
         msg.imu_pred = self._imu_pred
         msg.im_pred = [self._im_screw_hist[-1, 1], self._im_screw_hist[-1, 2]]
         self.pub.publish(msg)
