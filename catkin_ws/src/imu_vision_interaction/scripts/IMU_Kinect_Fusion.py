@@ -77,9 +77,9 @@ class FusionListener:
     def __init__(self):
         self._imu_pred = np.zeros(5)
         self._imu_pred_hist = np.empty(5)
-        self._im_screw_hist = np.zeros((1, 5))
+        self._im_screw_hist = np.zeros((1, 5), dtype=float)
         self._timer = time.time()
-        self._imu_state_hist = np.array([4, 1])
+        self._imu_state_hist = np.array([4, 1], dtype=float)
         self._im_stat = 2
         self._imu_stat = [2, 2, 2, 2]
         self._state_est = self.StateEst()
@@ -99,7 +99,7 @@ class FusionListener:
     def imu_callback(self, data):
         self._imu_stat = data.imu_stat
         self._imu_pred = data.imu_msg
-        self._imu_state_hist = np.vstack((self._imu_state_hist, [np.argmax(self._imu_pred), 0]))
+        self._imu_state_hist = np.vstack((self._imu_state_hist, [np.argmax(self._imu_pred), 0])).astype(float)
         self._imu_pred_hist = np.vstack((self._imu_pred_hist, self._imu_pred))
         #rospy.loginfo(rospy.get_caller_id() + ' - I heard %s', data.data)
         self.fusion()
@@ -133,6 +133,8 @@ class FusionListener:
         if data.data != self._no_completed:
             self._no_completed = data.data
             self._state_est = self.StateEst()
+            self._imu_pred_hist = np.empty(5)
+            self._imu_state_hist = np.array([4, 1], dtype=float)
 
     def pub_message(self):
         rate = rospy.Rate(10)

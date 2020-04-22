@@ -5,6 +5,9 @@
 # https://github.com/ShubhamCpp/Circle-Detection-in-Real-Time
 
 # import the necessary packages
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 import numpy as np
 import argparse
 import cv2

@@ -83,7 +83,7 @@ class GUI:
         self.status_obj = Tk.Text(master=self.root, width=right_width)
         self.status_obj.grid(row=1, column=2)
 
-        self.counter_obj = Tk.Text(master=self.root, width=right_width, height=5)
+        self.counter_obj = Tk.Text(master=self.root, width=right_width, height=10)
         self.counter_obj.grid(row=2, column=2)
 
         self.next_button = Tk.Button(master=self.root, text="Next Part", command=self._next_part, bg="green", padx=50, pady=20)
@@ -111,29 +111,33 @@ class GUI:
                         # Fatal Python Error: PyEval_RestoreThread: NULL tstate
 
     def _next_part(self):
-        if 2 <= self._state <= 5:
-            self._state = 7
-            if self._state_est_final[-1, 1] == 1:
-                self._state = 8
-
-            if self._state_est_final[-1, 0] == 3:
-                self._state = 9
-            self._timer_flag = True
-            self._msg_timer = time.time()
-
-        elif self._state == 6 | self._timer_flag:
-            self._state = 2
-            self._no_completed = self._no_completed + 1
-            self._state_est_final = np.zeros((1, 2))
-            self._state_est_im = np.zeros((1, 2))
-            self._state_est_imu = np.zeros((1, 2))
-            self._timer_flag = False
-            self._msg_timer = time.time()
+        # if 2 <= self._state <= 5:
+        #     self._state = 7
+        #     if self._state_est_final[-1, 1] == 1:
+        #         self._state = 8
+        #
+        #     if self._state_est_final[-1, 0] == 3:
+        #         self._state = 9
+        #     self._timer_flag = True
+        #     self._msg_timer = time.time()
+        #
+        # elif self._state == 6 | self._timer_flag:
+        self._state = 2
+        self._no_completed = self._no_completed + 1
+        self._state_est_final = np.zeros((1, 2))
+        self._state_est_im = np.zeros((1, 2))
+        self._state_est_imu = np.zeros((1, 2))
+        self._timer_flag = False
+        self._msg_timer = time.time()
         pass
 
     def update_counter(self):
         counter_text = f"Screws: {self._state_est_final[-1, 0]:.0f} \n " \
                        f"Bolts: {self._state_est_final[-1, 1]:.0f} \n \n " \
+                       f"Im Screws: {self._state_est_im[-1, 0]:.0f} \n " \
+                       f"Im Bolts: {self._state_est_im[-1, 1]:.0f} \n \n "\
+                       f"IMU Screws: {self._state_est_imu[-1, 0]:.0f} \n " \
+                       f"IMU Bolts: {self._state_est_imu[-1, 1]:.0f} \n \n " \
                        f"Completed: {self._no_completed:.0f}"
         self.counter_obj.delete("1.0", Tk.END)
         self.counter_obj.insert(Tk.INSERT, counter_text)
