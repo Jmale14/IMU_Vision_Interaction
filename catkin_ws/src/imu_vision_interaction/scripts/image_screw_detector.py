@@ -66,7 +66,11 @@ class ImScrewDetector:
                             [width - 1, height - 1]], dtype="float32")
         m = cv2.getPerspectiveTransform(src_pts, dst_pts)
         out = cv2.warpPerspective(image, m, (width, height))
+        # cv2.imshow("out", out)
+        # if cv2.waitKey(10) == 27:
+        #     pass
         out = cv2.resize(out, (x, y))
+        #time.sleep(10)
         return out
 
     def save_img(self, image):
@@ -96,12 +100,22 @@ class ImScrewDetector:
         return closestptsidx
 
     def detect_screws(self, frame, disp):
+        # cv2.imshow("frame", frame)
+        # if cv2.waitKey(10) == 27:
+        #     pass
         grayIN = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
+        # cv2.imshow("gray", grayIN)
+        # if cv2.waitKey(10) == 27:
+        #     pass
         # apply GuassianBlur to reduce noise. medianBlur is also added for smoothening, reducing noise.
         gray = cv2.GaussianBlur(grayIN, (3, 3), 0)
+        # cv2.imshow("gaussian", gray)
+        # if cv2.waitKey(10) == 27:
+        #     pass
         gray = cv2.medianBlur(gray, 5)
-
+        # cv2.imshow("meidan", gray)
+        # if cv2.waitKey(10) == 27:
+        #     pass
         ddepth = cv2.CV_64F
 
         # Gradient X
@@ -113,16 +127,26 @@ class ImScrewDetector:
         # Total Gradient (approximate)
         grad = cv2.magnitude(grad_x, grad_y)
         grad = cv2.convertScaleAbs(grad)
+        # cv2.imshow("sobel", grad)
+        # if cv2.waitKey(10) == 27:
+        #     pass
 
         # Adaptive Guassian Threshold is to detect sharp edges in the Image. For more information Google it.
         gray = cv2.adaptiveThreshold(grad, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, \
                                      cv2.THRESH_BINARY, 11, 15)
+        # cv2.imshow("threshold", gray)
+        # if cv2.waitKey(10) == 27:
+        #     pass
 
         gray = cv2.medianBlur(gray, 3)
+        # cv2.imshow("median2", gray)
+        # if cv2.waitKey(10) == 27:
+        #     pass
         kernel = np.ones((3, 3), np.uint8)
         gray = cv2.erode(gray, kernel, iterations=4)
-
-  
+        # cv2.imshow("erosion", gray)
+        # if cv2.waitKey(10) == 27:
+        #     pass
 
         # Detect blobs.
         keypoints = self._detector.detect(gray)
@@ -130,10 +154,9 @@ class ImScrewDetector:
         gray_disp = cv2.drawKeypoints(gray, keypoints, np.array([]), (0, 0, 255),
                                                   cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
-        # if disp:
-        #     cv2.imshow("erosion", gray_disp)
-        #     if cv2.waitKey(10) == 27:
-        #         pass
+        # cv2.imshow("keypoints", gray_disp)
+        # if cv2.waitKey(10) == 27:
+        #     pass
         listpoints = []
         pointpts = np.empty((0, 2))
 
