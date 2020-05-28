@@ -3,17 +3,15 @@
 # https://www.learnopencv.com/blob-detection-using-opencv-python-c/
 # Paper 'Multimodal Control for Human-Robot Cooperation'
 # https://github.com/ShubhamCpp/Circle-Detection-in-Real-Time
+# https://github.com/M-Morris-95/Vision.git
 
-# import the necessary packages
+# imports
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 import numpy as np
-import argparse
 import cv2
 import time
-import freenect
-import frame_convert2
 from datetime import datetime
 import os
 from tensorflow.keras.models import load_model
@@ -70,10 +68,10 @@ class ImScrewDetector:
         # if cv2.waitKey(10) == 27:
         #     pass
         out = cv2.resize(out, (x, y))
-        #time.sleep(10)
         return out
 
     def save_img(self, image):
+        # Save image
         path = os.getcwd()
         os.chdir(path + '/raw_data')
         timestr = datetime.now().strftime("%Y%m%d-%H%M%S%f")
@@ -81,78 +79,52 @@ class ImScrewDetector:
         os.chdir(path)
 
     def find_four_closest(self, pointpts):
-        n = 0
-        nearestpoints = [None]*len(pointpts)
+        #  Use KNN algorithm to find 4 points with most similar distances to each other
         no_neigh = len(pointpts)
         if no_neigh > 4:
             no_neigh = 4
         neigh = NearestNeighbors(n_neighbors=no_neigh)
         neigh.fit(pointpts)
-        distances, indices = neigh.kneighbors(pointpts)
+        distances, indices = neigh.kneighbors(pointpts)  # Find distances between all points
 
         neigh = NearestNeighbors(n_neighbors=no_neigh)
         neigh.fit(distances)
-        distances2, indices2 = neigh.kneighbors(distances)
+        distances2, indices2 = neigh.kneighbors(distances)  # Find differences in distances between points
 
-        scores = np.std(distances2, axis=0)# * np.mean(distances2, axis=0)
+        scores = np.std(distances2, axis=0)
         pointidx = np.argmin(scores)
-        closestptsidx = indices2[pointidx]
+        closestptsidx = indices2[pointidx]  # Indices of 4 points with most similar distances to each other
         return closestptsidx
 
     def detect_screws(self, frame, disp):
-        # cv2.imshow("frame", frame)
-        # if cv2.waitKey(10) == 27:
-        #     pass
         grayIN = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # cv2.imshow("gray", grayIN)
-        # if cv2.waitKey(10) == 27:
-        #     pass
+
         # apply GuassianBlur to reduce noise. medianBlur is also added for smoothening, reducing noise.
         gray = cv2.GaussianBlur(grayIN, (3, 3), 0)
-        # cv2.imshow("gaussian", gray)
-        # if cv2.waitKey(10) == 27:
-        #     pass
         gray = cv2.medianBlur(gray, 5)
-        # cv2.imshow("meidan", gray)
-        # if cv2.waitKey(10) == 27:
-        #     pass
         ddepth = cv2.CV_64F
 
         # Gradient X
         grad_x = cv2.Sobel(gray, ddepth, 1, 0, 3)
-        #abs_grad_x = cv2.convertScaleAbs(grad_x)
         # Gradient Y
         grad_y = cv2.Sobel(gray, ddepth, 0, 1, 3)
-        #abs_grad_y = cv2.convertScaleAbs(grad_y)
         # Total Gradient (approximate)
         grad = cv2.magnitude(grad_x, grad_y)
         grad = cv2.convertScaleAbs(grad)
-        # cv2.imshow("sobel", grad)
-        # if cv2.waitKey(10) == 27:
-        #     pass
 
         # Adaptive Guassian Threshold is to detect sharp edges in the Image. For more information Google it.
         gray = cv2.adaptiveThreshold(grad, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, \
                                      cv2.THRESH_BINARY, 11, 15)
-        # cv2.imshow("threshold", gray)
-        # if cv2.waitKey(10) == 27:
-        #     pass
 
         gray = cv2.medianBlur(gray, 3)
-        # cv2.imshow("median2", gray)
-        # if cv2.waitKey(10) == 27:
-        #     pass
         kernel = np.ones((3, 3), np.uint8)
         gray = cv2.erode(gray, kernel, iterations=4)
-        # cv2.imshow("erosion", gray)
-        # if cv2.waitKey(10) == 27:
-        #     pass
 
         # Detect blobs.
         keypoints = self._detector.detect(gray)
 
-        gray_disp = cv2.drawKeypoints(gray, keypoints, np.array([]), (0, 0, 255),
-                                                  cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        #gray_disp = cv2.drawKeypoints(gray, keypoints, np.array([]), (0, 0, 255),
+        #                                          cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
         # cv2.imshow("keypoints", gray_disp)
         # if cv2.waitKey(10) == 27:
@@ -162,12 +134,14 @@ class ImScrewDetector:
 
         i = 0
         guesses = []
+        #  For each possible point classify
         for point in keypoints:
+            # Select region around point and resize
             rect = ((point.pt[0], point.pt[1]), (point.size, point.size), 0)
             box_pts = np.int0(cv2.boxPoints(rect))
             image = self.rot_crop(grayIN, rect, box_pts, self._size, self._size)
             image = image.reshape(1, 28, 28, 1)
-            guess = self._model.predict_proba(image)
+            guess = self._model.predict_proba(image)  # Use CNN to predict image contents
             if int(np.argmax(guess[0])) != 4:
                 guesses.append(guess[0])
                 pointpts = np.append(pointpts, [[point.pt[0], point.pt[1]]], axis=0)
@@ -201,41 +175,6 @@ class ImScrewDetector:
                                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
                 i = i + 1
-
-        # for g in guesses:
-        #     prob = np.max(g)
-        #     guess = int(np.argmax(g))
-        #     if guess == 4:
-        #         tally[4] = tally[4]+1
-        #         pass
-        #     else:
-        #         if guess == 0 | guess == 1:
-        #             # Screw
-        #             tally[guess] = tally[guess] + 1
-        #             if prob >= np.min(screw_probs):
-        #                 screw_probs[np.argmin(screw_probs)] = prob
-        #                 fourkeypoints[np.argmin(screw_probs)] = keypoints[i]
-        #
-        #                 txt = f"{self._CATEGORIES[guess]}"
-        #                 frame = cv2.drawKeypoints(frame, fourkeypoints, np.array([]), (0, 0, 255),
-        #                                           cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-        #                 frame = cv2.putText(frame, txt, (int(keypoints[i].pt[0]), int(keypoints[i].pt[1])),
-        #                                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-        #
-        #         else:
-        #             # Bolt
-        #             tally[guess] = tally[guess] + 1
-        #             if prob >= bolt_probs:
-        #                 bolt_probs = prob
-        #                 fourkeypoints[3] = keypoints[i]
-        #
-        #                 txt = f"{self._CATEGORIES[guess]}"
-        #                 frame = cv2.drawKeypoints(frame, fourkeypoints, np.array([]), (0, 0, 255),
-        #                                           cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-        #                 frame = cv2.putText(frame, txt, (int(keypoints[i].pt[0]), int(keypoints[i].pt[1])),
-        #                                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
-        #
-        #     i = i + 1
 
         # Display the resulting frame
         if disp:

@@ -15,17 +15,8 @@ from imu_vision_interaction.msg import gui_msg
 from std_msgs.msg import Int8
 
 
-# class StateEst:
-#     def __init__(self):
-#         self._final = np.array([[6, 6], [6, 6], [6, 6]])
-#         self._im = np.array([[5, 5], [5, 5], [5, 5]])
-#         self._imu = np.array([[7, 7], [7, 7], [7, 7]])
-
-
 CATEGORIES = ['AllenKeyIn', 'AllenKeyOut', 'ScrewingIn', 'ScrewingOut', 'Null']
 pos = np.arange(len(CATEGORIES))
-#imu_state_hist = np.array([4, 4, 4], dtype=np.int)
-#im_screw_hist = np.zeros((1, 3), dtype=np.int)
 
 plt.ion()
 
@@ -41,7 +32,6 @@ class GUI:
         self._state = 0
         self._msg_timer = time.time()
         self._prt_done = False
-        #self._state_est = None
         self._timer_flag = False
         self._sys_stat = 2
         self._state_est_final = np.zeros((1, 2))
@@ -53,24 +43,22 @@ class GUI:
         self._imu_pred = np.zeros(5)
         self._im_pred = np.zeros(2)
 
+        # Create GUI
         self.root = Tk.Tk()
         self.root.wm_title("IMU and Vision Interaction System")
         self.root.resizable(True, True)
+        # Graph area for current predictions
         self.canvas = FigureCanvasTkAgg(fig, master=self.root)  # A tk.DrawingArea.
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=0, rowspan=4, columnspan=2, sticky=Tk.W + Tk.E + Tk.N + Tk.S)
 
-        # toolbar = NavigationToolbar2Tk(canvas, root)
-        # toolbar.update()
-        # canvas.get_tk_widget().pack(side=Tk.TOP, fill=Tk.BOTH, expand=1)
-
-        # canvas.mpl_connect("key_press_event", on_key_press(canvas, toolbar))
-
+        # Message object for prompts to user
         self.message_obj = Tk.Text(master=self.root, width=70, height=2, pady=20)
         self.message_obj.tag_add("center", "1.0", "end")
         self.message_obj.tag_configure("center", justify="center")
         self.message_obj.grid(row=4, column=0, columnspan=2)
 
+        # Uni logo
         load = Image.open("logo.jpg")
         resized = load.resize((100, 100), Image.ANTIALIAS)
         render = ImageTk.PhotoImage(resized)
@@ -79,19 +67,19 @@ class GUI:
         self.img.grid(row=0, column=2, sticky=Tk.W + Tk.E + Tk.N + Tk.S)
 
         right_width = 25
-
+        # System status message box
         self.status_obj = Tk.Text(master=self.root, width=right_width)
         self.status_obj.grid(row=1, column=2)
-
+        # No. completed screws/bolts/parts box
         self.counter_obj = Tk.Text(master=self.root, width=right_width, height=10)
         self.counter_obj.grid(row=2, column=2)
-
+        # Manual next part button
         self.next_button = Tk.Button(master=self.root, text="Next Part", command=self._next_part, bg="green", padx=50, pady=20)
         self.next_button.grid(row=3, column=2, sticky=Tk.W + Tk.E + Tk.N + Tk.S)
-
+        # Quit button
         self.quit_button = Tk.Button(master=self.root, text="Quit", command=self._quit, bg="red", padx=50, pady=20)
         self.quit_button.grid(row=4, column=2, sticky=Tk.W + Tk.E + Tk.N + Tk.S)
-
+        # Adjust spacing of objects
         self.root.grid_columnconfigure(0, weight=1)
         self.root.grid_columnconfigure(1, weight=1)
         self.root.grid_columnconfigure(2, weight=0)
@@ -279,24 +267,15 @@ class GUI:
 
 
 def listener():
+    # Run GUI
     gui = GUI()
     rospy.init_node('gui_listener', anonymous=True)
     rospy.Subscriber('gui_Data', gui_msg, gui.update_data)
-    #rospy.spin()
     while not rospy.is_shutdown():
         gui.update_gui()
 
 
 if __name__ == '__main__':
-    #completed = 0
+    # Run ROS node
     listener()
-# while not QUIT:
-#     time.sleep(0.5)
-#     imu_stat = [1, 0, 1, 1]
-#     kin_stat = [1]
-#     completed = gui.update_gui(imu_stat, kin_stat, state_est)
-    #gui._state = gui._state + 1
 
-# def on_key_press(event, canvas, toolbar):
-#     print("you pressed {}".format(event.key))
-#     key_press_handler(event, canvas, toolbar)

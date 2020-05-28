@@ -121,13 +121,6 @@ class FusionListener:
         cutoff_t = time.time() - 1
         self._im_screw_hist = np.delete(self._im_screw_hist, np.where(self._im_screw_hist[:, 0] < cutoff_t)[0], axis=0)
         self.fusion()
-        # rospy.loginfo(f"{rospy.get_caller_id()}:"
-        #               f"    Safe Move: {data.safe_move} \n"
-        #               f"    Image Screw Predictions: {data.im_screw_probs_1} \n"
-        #               f"                             {data.im_screw_probs_2} \n"
-        #               f"                             {data.im_screw_probs_3} \n"
-        #               f"                             {data.im_screw_probs_4} \n"
-        #               f"    Predictions Tally: {data.tally}")
 
     def gui_callback(self, data):
         if data.data != self._no_completed:

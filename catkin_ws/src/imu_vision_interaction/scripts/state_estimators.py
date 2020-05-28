@@ -27,27 +27,18 @@ def im_state_est(im_screw_hst):
 
 def imu_state_est(imu_state_hist, imu_pred_hist):
     # 'Dilation' filter to remove single erroneous predictions
-    #print(f"1-{imu_state_hist}")
-    #print(f"2-{imu_pred_hist}")
     if np.shape(imu_state_hist)[0] >= 3:
-        #print('lol')
         if (imu_state_hist[-1, 0] == imu_state_hist[-3, 0]) & (imu_state_hist[-2, 1] <= 0.00000000001):
-            #print('banter')
             imu_state_hist[-2, 0] = imu_state_hist[-1, 0]
 
         # Group predictions of same type together
         if imu_state_hist[-2, 0] == imu_state_hist[-3, 0]:
             imu_state_hist = np.delete(imu_state_hist, -2, 0)
-            #print('here')
-            #print(f"1-{imu_state_hist}")
             imu_state_hist[-2, 1] = np.mean(imu_pred_hist[:-1, int(imu_state_hist[-2, 0])].astype(float))
         else:
-            #print('sup')
             imu_pred_hist = np.array(imu_pred_hist[-1, :])
             imu_pred_hist = np.reshape(imu_pred_hist, (1, 5))
 
-    #print(f"3-{imu_state_hist}")
-    #print(f"4-{imu_pred_hist}")
     return imu_state_hist, imu_pred_hist
 
 
@@ -55,9 +46,7 @@ def current_state_est(im_screw_hist, imu_state_hist, state_est, im_stat, imu_sta
     if all((i == 1) for i in imu_stat):
         imu_state_hist, imu_pred_hist = imu_state_est(imu_state_hist, imu_pred_hist)
         if np.shape(imu_state_hist)[0] >= 3:
-            #print(imu_state_hist[-2, 1])
             imu_count = np.bincount(np.array(imu_state_hist[:-1, 0], dtype=np.int), imu_state_hist[:-1, 1])
-            #print(imu_count)
             if imu_count[2] > 3:
                 imu_count[2] = 3
             if imu_count[0] > 1:
@@ -76,6 +65,5 @@ def current_state_est(im_screw_hist, imu_state_hist, state_est, im_stat, imu_sta
         if final_est[1] > 1:
             final_est[1] = 1
         state_est._final = final_est
-    # print(f"IMU:{state_est._imu} IM:{state_est._im} Final:{state_est._final}")
 
     return state_est, imu_state_hist, imu_pred_hist
